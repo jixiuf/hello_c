@@ -1,3 +1,7 @@
+*.class
+*.out
+*.dat
+
 # Compiled Object files
 *.slo
 *.lo
