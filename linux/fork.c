@@ -19,11 +19,11 @@ int main(int argc, char *argv[])
     exit(1);
   }
   if (0==pid){                  /* 说明是当前pid 走进来 */
-    msg= "this is parent process";
+    msg= "this is child process";
     n=3;
   }
   if (0!=pid){
-    msg="this is the child process";
+    msg="this is the parent process";
     n=6;
   }
 
