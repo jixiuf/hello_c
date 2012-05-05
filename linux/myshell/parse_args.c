@@ -2,6 +2,9 @@
 #include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
+/* 返回token 的长度，解析后的token放在params_out中,如完需要调用 free_args() */
+/* 释放相应的内存 */
+/* 如果参数line的格式不对，返回-1,会自动释放已分配的内存,不需手动调用free_args */
 int parse_args(char* line,char*** params_out){
   int str_len=strlen(line);
   /* 对与一个命令行 cmd，最多有 length(cmd)/2个token ,因为分隔符也要占一份  */
@@ -12,7 +15,7 @@ int parse_args(char* line,char*** params_out){
   while(*p!=0){
     index=get_next_token(p,&ptrs[ptr_index++]);
     if(index==-1){
-    /* 如果在解析过程中出错，释放已经审请的内存 */
+      /* 如果在解析过程中出错，释放已经审请的内存 */
       for ( i = 0; i < ptr_index-1; ++i){
         free(ptrs[i]);
       }
@@ -39,8 +42,8 @@ int parse_args(char* line,char*** params_out){
  *  got_token is  the address of a  point of the first parameter token,
  *  you need free it ,because it is malloc.
  *
-  @return the index of or -1 if the format of line is invalid
- */
+ @return the index of or -1 if the format of line is invalid
+*/
 int get_next_token(char* line,char** got_token){
   int head=1;
   int quote=0;
@@ -125,13 +128,15 @@ int main(int argc, char *argv[]){
   char** params,**p;
   int i;
   int len=parse_args(line,&params);
-  /* printf ("%p\n",params); */
-  p=params;
-  for ( i = 0; i<len; ++i){
-    printf ("token%d=%s\n",i,*p);
-    p++;
+  if(len>0){
+    /* printf ("%p\n",params); */
+    p=params;
+    for ( i = 0; i<len; ++i){
+      printf ("token%d=%s\n",i,*p);
+      p++;
+    }
+    /* 释放在解析参数时审请的内存 */
+    free_args(params,len);
   }
-  /* 释放在解析参数时审请的内存 */
-  free_args(params,len);
   return 0;
 }
