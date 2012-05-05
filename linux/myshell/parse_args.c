@@ -48,6 +48,7 @@ int parse_args(char* line,char*** params_out){
  @return the index of or -1 if the format of line is invalid
  or -2 if whole line is tab or space
 */
+/* 目前不支持 ;,不支持 1> 2> 1>> 2>>  */
 int get_next_token(char* line,char** got_token){
   int head=1;
   int quote=0;
