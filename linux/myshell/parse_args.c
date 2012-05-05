@@ -4,6 +4,7 @@
 #include <stdlib.h>
 int parse_args(char* line,char*** params_out){
   int str_len=strlen(line);
+  /* 对与一个命令行 cmd，最多有 length(cmd)/2个token ,因为分隔符也要占一份  */
   char* ptrs[strlen(line)/2];
   char *p=line;
   char **params ,**p2;
@@ -11,6 +12,7 @@ int parse_args(char* line,char*** params_out){
   while(*p!=0){
     index=get_next_token(p,&ptrs[ptr_index++]);
     if(index==-1){
+    /* 如果在解析过程中出错，释放已经审请的内存 */
       for ( i = 0; i < ptr_index-1; ++i){
         free(ptrs[i]);
       }
@@ -107,6 +109,7 @@ int get_next_token(char* line,char** got_token){
   *got_token = p;
   return index;
 }
+/* 释放在解析参数时审请的内存 */
 void free_args(char** params,int len){
   char** p=params;
   int i;
@@ -128,6 +131,7 @@ int main(int argc, char *argv[]){
     printf ("token%d=%s\n",i,*p);
     p++;
   }
+  /* 释放在解析参数时审请的内存 */
   free_args(params,len);
   return 0;
 }
