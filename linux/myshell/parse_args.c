@@ -106,7 +106,7 @@ int get_next_token(char* line,char** got_token){
         head=0;
         token[index++]=c;
         if(i<len-1){          /* 如果有后继字符，判断下一个字符是不是> 以组成>> */
-            /* printf ("%c,%d\n",*p,index); */
+          /* printf ("%c,%d\n",*p,index); */
           if (*p=='>'){
             p++;
             i++;
@@ -205,10 +205,10 @@ int main(int argc, char *argv[]){
   /* char line[100]="ls -l|more>>\"b.out name\""; */
   /* char line[100]="ls -l|more>>\"|b.out name\""; */
   /* char line[100]="ls -l|more>>\"|<>>b.out name\""; */
-  char line[100]=" ls -l|more>>\"|<>>b.out name\"";
+  /* char line[100]=" ls -l|more>>\"|<>>b.out name\""; */
   /* char line[100]=" ls -l|more>>\"|<>>b.out name\"  "; */
-  /* char line[100]=" ls -l|more"; */
- printf ("%s\n",line);
+  /* char line[100]=" dd </dev/zero >/tmp/s "; */
+  printf ("%s\n",line);
   char** params,**p;
   int i;
   int len=parse_args(line,&params);
