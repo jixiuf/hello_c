@@ -21,6 +21,9 @@ int parse_args(char* line,char*** params_out){
       }
       fprintf(stderr,"parse command error");
       return -1;
+    }else if (index==-2){        /* 解析到空串,说明解析到末尾了 */
+      ptr_index--;
+      break;
     }else{
       p=p+index;
     }
@@ -43,6 +46,7 @@ int parse_args(char* line,char*** params_out){
  *  you need free it ,because it is malloc.
  *
  @return the index of or -1 if the format of line is invalid
+ or -2 if whole line is tab or space
 */
 int get_next_token(char* line,char** got_token){
   int head=1;
@@ -53,12 +57,13 @@ int get_next_token(char* line,char** got_token){
   int parse_done=0;
   int len=strlen(line);
   char token[len+1];
+  /* printf ("cur=%s\n",line); */
   for ( i = 0; i < len; ++i){
     c= *p;
     p++;
-    if (c!=' '&&c!='\t'){
-      head=0;
-    }
+    /* if (c!=' '&&c!='\t'){ */
+    /*   head=0; */
+    /* } */
     if (c==' '||c=='\t'){
       if (head==1){
         continue;
@@ -74,7 +79,59 @@ int get_next_token(char* line,char** got_token){
           break;
         }
       }
-    }else if (c=='\\'){
+    }else if (c=='|' ||c=='<'){
+      if (head==1){
+        token[index++]=c;
+        token[index++]=0;
+        head=0;
+        parse_done=1;
+        break;
+      }else{
+        head=0;
+        if (quote==1){
+          token[index++]=c;
+        }else{
+          if(translate==1){
+            token[index++]='\\';
+          }
+          i--;
+          token[index++]=0;
+          /* printf ("%c,%d\n",c,index); */
+          parse_done=1;
+          break;
+        }
+      }
+    }else if (c=='>'){
+      if (head==1){
+        head=0;
+        token[index++]=c;
+        if(i<len-1){          /* 如果有后继字符，判断下一个字符是不是> 以组成>> */
+            /* printf ("%c,%d\n",*p,index); */
+          if (*p=='>'){
+            p++;
+            i++;
+            token[index++]=c;
+          }
+        }
+        token[index++]=0;
+        parse_done=1;
+        break;
+      }else{
+        head=0;
+        if (quote==1){
+          token[index++]=c;
+        }else{
+          if(translate==1){
+            token[index++]='\\';
+          }
+          i--;
+          token[index++]=0;
+          parse_done=1;
+          break;
+        }
+      }
+    } else if (c=='\\'){
+      head=0;
       if (translate==0){
         translate=1;
       }else{
@@ -82,12 +139,13 @@ int get_next_token(char* line,char** got_token){
         token[index++]='\\';
       }
     }else if (c=='\"'){
+      head=0;
       if(translate==1){
         token[index++]='\"';
       }else{
         if (quote==1){
           token[index++]=0;
-          index++;
+          i++;
           parse_done=1;
           break;
         }else{
@@ -95,6 +153,7 @@ int get_next_token(char* line,char** got_token){
         }
       }
     }else {
+      head=0;
       if (translate==1){
         token[index++]='\\';
       }
@@ -107,10 +166,14 @@ int get_next_token(char* line,char** got_token){
       return -1;
     }
   }
-  p = (char*) malloc(index+1);
+  if(head==1){                  /* 如果解析到是是一个空串，返回0,此时并未动态分配内存 */
+    return -2;
+  }
+  p = (char*) malloc(index*sizeof(char));
   strcpy(p,token);
   *got_token = p;
-  return index;
+  /* printf ("%d,%d\n",i,index); */
+  return i+1;
 }
 /* 释放在解析参数时审请的内存 */
 void free_args(char** params,int len){
@@ -123,8 +186,29 @@ void free_args(char** params,int len){
   free(params);
 }
 int main(int argc, char *argv[]){
-  char line[100]="asdf asdfads";
-  printf ("%s\n",line);
+  /* char line[100]="ls -l"; */
+  /* char line[100]="ls -l>a.out"; */
+  /* char line[100]="ls -l>>a.out"; */
+  /* char line[100]="ls -l>> a.out"; */
+  /* char line[100]="ls -l >> a.out"; */
+  /* char line[100]="ls -l <a.out"; */
+  /* char line[100]="ls -l |more"; */
+  /* char line[100]="ls -l | more"; */
+  /* char line[100]="ls -l| more"; */
+  /* char line[100]="ls<a.in >b.out"; */
+  /* char line[100]="ls -l|more >b.out"; */
+  /* char line[100]="ls -l|more > b.out"; */
+  /* char line[100]="ls -l|more >> b.out"; */
+  /* char line[100]="ls -l|more >>b.out"; */
+  /* char line[100]="ls -l|more>>b.out"; */
+  /* char line[100]="ls -l|more>>\"b.out name\""; */
+  /* char line[100]="ls -l|more>>\"b.out name\""; */
+  /* char line[100]="ls -l|more>>\"|b.out name\""; */
+  /* char line[100]="ls -l|more>>\"|<>>b.out name\""; */
+  char line[100]=" ls -l|more>>\"|<>>b.out name\"";
+  /* char line[100]=" ls -l|more>>\"|<>>b.out name\"  "; */
+  /* char line[100]=" ls -l|more"; */
+ printf ("%s\n",line);
   char** params,**p;
   int i;
   int len=parse_args(line,&params);
