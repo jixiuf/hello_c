@@ -107,6 +107,15 @@ int get_next_token(char* line,char** got_token){
   *got_token = p;
   return index;
 }
+void free_args(char** params,int len){
+  char** p=params;
+  int i;
+  for ( i = 0; i<len; ++i){
+    free(*p);
+    p++;
+  }
+  free(params);
+}
 int main(int argc, char *argv[]){
   char line[100]="asdf asdfads";
   printf ("%s\n",line);
@@ -119,5 +128,6 @@ int main(int argc, char *argv[]){
     printf ("token%d=%s\n",i,*p);
     p++;
   }
+  free_args(params,len);
   return 0;
 }
