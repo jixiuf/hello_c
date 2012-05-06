@@ -37,7 +37,7 @@ free_parse(struct proc_start_info *psi,int proc_len){
     /* 释放指向参数的指针数组，但是，存放实际参数的内存并未释放，这部分内容，须另外调free_args(char** params,int len); */
     p++;
   }
-  /* 释放 proc_start_info结构体占的内存 */
+  /* 释放 proc_start_info结构体数组占的内存 */
   free(psi);
 }
 /* read a line to parameter line
