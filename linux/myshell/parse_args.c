@@ -186,42 +186,42 @@ void free_args(char** params,int len){
   }
   free(params);
 }
-int main(int argc, char *argv[]){
-  /* char line[100]="ls -l"; */
-  /* char line[100]="ls -l>a.out"; */
-  /* char line[100]="ls -l>>a.out"; */
-  /* char line[100]="ls -l>> a.out"; */
-  /* char line[100]="ls -l >> a.out"; */
-  /* char line[100]="ls -l <a.out"; */
-  /* char line[100]="ls -l |more"; */
-  /* char line[100]="ls -l | more"; */
-  /* char line[100]="ls -l| more"; */
-  /* char line[100]="ls<a.in >b.out"; */
-  /* char line[100]="ls -l|more >b.out"; */
-  /* char line[100]="ls -l|more > b.out"; */
-  /* char line[100]="ls -l|more >> b.out"; */
-  /* char line[100]="ls -l|more >>b.out"; */
-  /* char line[100]="ls -l|more>>b.out"; */
-  /* char line[100]="ls -l|more>>\"b.out name\""; */
-  /* char line[100]="ls -l|more>>\"b.out name\""; */
-  /* char line[100]="ls -l|more>>\"|b.out name\""; */
-  /* char line[100]="ls -l|more>>\"|<>>b.out name\""; */
-  /* char line[100]=" ls -l|more>>\"|<>>b.out name\""; */
-  /* char line[100]=" ls -l|more>>\"|<>>b.out name\"  "; */
-  /* char line[100]=" dd </dev/zero >/tmp/s "; */
-  printf ("%s\n",line);
-  char** params,**p;
-  int i;
-  int len=parse_args(line,&params);
-  if(len>0){
-    /* printf ("%p\n",params); */
-    p=params;
-    for ( i = 0; i<len; ++i){
-      printf ("token%d=%s\n",i,*p);
-      p++;
-    }
-    /* 释放在解析参数时审请的内存 */
-    free_args(params,len);
-  }
-  return 0;
-}
+/* int main(int argc, char *argv[]){ */
+/*   /\* char line[100]="ls -l"; *\/ */
+/*   /\* char line[100]="ls -l>a.out"; *\/ */
+/*   /\* char line[100]="ls -l>>a.out"; *\/ */
+/*   /\* char line[100]="ls -l>> a.out"; *\/ */
+/*   /\* char line[100]="ls -l >> a.out"; *\/ */
+/*   /\* char line[100]="ls -l <a.out"; *\/ */
+/*   /\* char line[100]="ls -l |more"; *\/ */
+/*   /\* char line[100]="ls -l | more"; *\/ */
+/*   /\* char line[100]="ls -l| more"; *\/ */
+/*   /\* char line[100]="ls<a.in >b.out"; *\/ */
+/*   /\* char line[100]="ls -l|more >b.out"; *\/ */
+/*   /\* char line[100]="ls -l|more > b.out"; *\/ */
+/*   /\* char line[100]="ls -l|more >> b.out"; *\/ */
+/*   /\* char line[100]="ls -l|more >>b.out"; *\/ */
+/*   /\* char line[100]="ls -l|more>>b.out"; *\/ */
+/*   /\* char line[100]="ls -l|more>>\"b.out name\""; *\/ */
+/*   /\* char line[100]="ls -l|more>>\"b.out name\""; *\/ */
+/*   /\* char line[100]="ls -l|more>>\"|b.out name\""; *\/ */
+/*   /\* char line[100]="ls -l|more>>\"|<>>b.out name\""; *\/ */
+/*   /\* char line[100]=" ls -l|more>>\"|<>>b.out name\""; *\/ */
+/*   /\* char line[100]=" ls -l|more>>\"|<>>b.out name\"  "; *\/ */
+/*   /\* char line[100]=" dd </dev/zero >/tmp/s "; *\/ */
+/*   printf ("%s\n",line); */
+/*   char** params,**p; */
+/*   int i; */
+/*   int len=parse_args(line,&params); */
+/*   if(len>0){ */
+/*     /\* printf ("%p\n",params); *\/ */
+/*     p=params; */
+/*     for ( i = 0; i<len; ++i){ */
+/*       printf ("token%d=%s\n",i,*p); */
+/*       p++; */
+/*     } */
+/*     /\* 释放在解析参数时审请的内存 *\/ */
+/*     free_args(params,len); */
+/*   } */
+/*   return 0; */
+/* } */
