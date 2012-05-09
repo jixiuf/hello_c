@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include "parse_args.h"
+#include <fcntl.h>
 
 #define PROMPT ">"
 #define LINE_MAX_LENGTH 1024
@@ -17,6 +18,7 @@ struct proc_start_info{
   char* foutname;
   int fdout_append;
   int need_pipe;
+  int pipefd[2];
 };
 print_proc_start_info(struct proc_start_info *psi){
   char **p=psi->params;
@@ -127,56 +129,155 @@ int parse(char** params ,int args_len,struct proc_start_info **psi_out){
   }
   psi_tmp->params=real_params;
   *psi_out=psi;
+
   /* print_proc_start_info(psi_tmp); */
   return pipe_char_count+1;
 }
-void exec(){
-  int args_len;
+void exec(char* cmdline){
   char** params;
+  int params_len,proc_len,i,j;
+  struct proc_start_info *psi,*p,*p2;
+  pid_t parent_pid;
+  pid_t pid ;
+  int proc_count;
+  printf ("%s\n",cmdline);
+  parent_pid=getpid();
+  params_len=parse_args(cmdline,&params);
+  proc_count= proc_len=parse(params,params_len,&psi);
 
 
-}
-
-int main(int argc, char *argv[]){
-  char line[100]="ls -l|grep l|more>/tmp/out";
-  char** params;
-  int params_len,proc_len,i;
-  struct proc_start_info *psi,*p;
-  params_len=parse_args(line,&params);
-  proc_len=parse(params,params_len,&psi);
   p=psi;
-  for ( i = 0; i < proc_len; ++i){
-    print_proc_start_info(p);
+  for (i = 0; i <proc_count; ++i){
+    if (p->foutname){
+      if(p->fdout_append){
+        p->fdout = open(p->foutname,O_WRONLY|O_CREAT);
+      }else{
+        p->fdout = open(p->foutname,O_WRONLY|O_CREAT|O_APPEND); /* append */
+      }
+    }else{
+      p->fdout=STDOUT_FILENO;
+    }
+    if(p->finname){
+      p->fdin = open(p->foutname,O_RDONLY);
+    }else{
+      p->fdin=STDIN_FILENO;
+    }
+    if(p->need_pipe){           /* 只要不是最后一个need_pipe 都是1  ,都会建管道*/
+      pipe(p->pipefd);
+    }
     p++;
   }
+  p=psi;
+  if(proc_len==0){
+    /* do nothing */
+  }else if(proc_len==1){
+    if(fork()==0){
+      dup2(p->fdin,STDIN_FILENO);
+      if (p->fdin!=STDIN_FILENO) close(p->fdin);
+      dup2(p->fdout,STDOUT_FILENO);
+      if (p->fdout!=STDOUT_FILENO) close(p->fdout);
+
+      /* close(p->pipefd[0]);         /\* 只有一个fork ,不需要管道 *\/ */
+      /* close(p->pipefd[1]); */
+      execvp(p->cmd,p->params);
+      exit(1);
+    }
+  }else{                        /* >1 */
+    if(fork()==0){              /* first one */
+      dup2(p->fdin,STDIN_FILENO);
+      if (p->fdin!=STDIN_FILENO) close(p->fdin);
+      close(p->fdout);
+      dup2(p->pipefd[1],STDOUT_FILENO);
+
+      p2=psi;
+      for (j = 0; j <proc_len-1 ; j++){
+        if(p2->pipefd[1]!=STDOUT_FILENO)close(p2->pipefd[1]);
+        if(p2->pipefd[0]!=STDIN_FILENO)close(p2->pipefd[0]);
+        /* close(p2->pipefd[0]); */
+        /* close(p2->pipefd[1]); */
+        p2++;
+      }
+        execvp(p->cmd,p->params);
+    }
+    /* middle ones  */
+    p++;
+    for (i = 0; i <proc_len-2 ; i++){
+      if(fork()==0){
+        if (p->fdin!=STDIN_FILENO) close(p->fdin);
+        if (p->fdout!=STDOUT_FILENO) close(p->fdout);
+
+        dup2(p->pipefd[1],STDOUT_FILENO);
+
+
+        p--;
+
+        dup2(p->pipefd[0],STDIN_FILENO);
+
+        p++;                    /* 恢复 */
+        p2=psi;
+        for (j = 0; j <proc_len-1 ; j++){
+          if (p2->pipefd[1]!=STDOUT_FILENO) close(p2->pipefd[1]);
+          if(p2->pipefd[0]!=STDIN_FILENO)close(p2->pipefd[0]);
+          p2++;
+        }
+        execvp(p->cmd,p->params);
+      }
+      p++;                      /* next */
+    }
+
+    if(fork()==0){              /* last one  */
+      if (p->fdin!=STDIN_FILENO) close(p->fdin);
+
+      dup2(p->fdout,STDOUT_FILENO);
+      if (p->fdout!=STDOUT_FILENO) close(p->fdout);
+
+      p--;
+      dup2(p->pipefd[0],STDIN_FILENO);
+
+      p++;                    /* 恢复 */
+      p2=psi;
+      for (j = 0; j <proc_len-1 ; j++){
+        if (p2->pipefd[1]!=STDOUT_FILENO) close(p2->pipefd[1]);
+        if(p2->pipefd[0]!=STDIN_FILENO)close(p2->pipefd[0]);
+        p2++;
+      }
+      execvp(p->cmd,p->params);
+    }
+  }
+  /* for the main process ,close all pipe */
+  p=psi;
+  for (i = 0; i < proc_count-1; i++){
+    close(p->pipefd[0]);
+    close(p->pipefd[1]);
+    p++;
+  }
+
   free_parse(psi,proc_len)  ;
   free_args(params,params_len);
-  return 0;
+
+for (i = 0; i < proc_len; i++){
+  wait(NULL);
+ }
 }
-
 /* int main(int argc, char *argv[]){ */
-/*   char line[LINE_MAX_LENGTH]; */
-/*   pid_t pid; */
-
-/*   printf ("%s",PROMPT); */
-
-/*   while (my_getline(line)!=-1){ */
-/*     pid= fork(); */
-/*     if (pid==-1){ */
-/*       perror("for child"); */
-/*       exit(1); */
-/*     } */
-/*     if (pid==0){                /\* child *\/ */
-/*       execlp(line,line,NULL); */
-/*       perror("exec error"); */
-/*     } */
-/*     if (pid>0){                 /\* parent *\/ */
-/*       wait(NULL); */
-/*       fprintf(stderr,PROMPT); */
-/*     } */
-/*   } */
-/*   fprintf(stderr,"error\n"); */
-/*   exit(1); */
-
+/*   char str[100]="pwd"; */
+/*   exec(str); */
 /*   return 0; */
 /* } */
+
+
+int main(int argc, char *argv[]){
+  char line[LINE_MAX_LENGTH];
+  pid_t pid;
+
+  fprintf (stderr,"%s",PROMPT);
+
+  while (my_getline(line)!=-1){
+    exec(line);
+    fprintf (stderr,"%s",PROMPT);
+  }
+  fprintf(stderr,"error\n");
+  exit(1);
+
+  return 0;
+}
