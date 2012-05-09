@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include "parse_args.h"
 #include <fcntl.h>
+#include <string.h>
 
 #define PROMPT ">"
 #define LINE_MAX_LENGTH 1024
@@ -140,11 +141,15 @@ void exec(char* cmdline){
   pid_t parent_pid;
   pid_t pid ;
   int proc_count;
-  printf ("%s\n",cmdline);
   parent_pid=getpid();
   params_len=parse_args(cmdline,&params);
   proc_count= proc_len=parse(params,params_len,&psi);
-
+  /* 打印启动每个进程相关的信息 */
+  /* p=psi; */
+  /* for (i = 0; i <proc_count; ++i){ */
+  /*   print_proc_start_info(p); */
+  /*   p++; */
+  /* } */
 
   p=psi;
   for (i = 0; i <proc_count; ++i){
@@ -260,7 +265,7 @@ for (i = 0; i < proc_len; i++){
  }
 }
 /* int main(int argc, char *argv[]){ */
-/*   char str[100]="pwd"; */
+/*   char str[100]="cat a"; */
 /*   exec(str); */
 /*   return 0; */
 /* } */
