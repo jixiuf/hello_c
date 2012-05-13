@@ -6,6 +6,9 @@
 #include "parse_args.h"
 #include <fcntl.h>
 #include <string.h>
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
 
 #define PROMPT ">"
 #define LINE_MAX_LENGTH 1024
@@ -36,7 +39,7 @@ free_parse(struct proc_start_info *psi,int proc_len){
   struct proc_start_info *p=psi;
   int i;
   for ( i = 0; i < proc_len; ++i){
-    free(p->params);
+     free(p->params);
     /* 释放指向参数的指针数组，但是，存放实际参数的内存并未释放，这部分内容，须另外调free_args(char** params,int len); */
     p++;
   }
@@ -59,6 +62,7 @@ int my_getline(char* line){
   if (i==LINE_MAX_LENGTH){
     return -1;
   }
+  printf ("str=%s\n",p);
   return i;
 }
 int parse(char** params ,int args_len,struct proc_start_info **psi_out){
@@ -109,7 +113,7 @@ int parse(char** params ,int args_len,struct proc_start_info **psi_out){
       }
       psi_tmp->params=real_params;
 
-      /* print_proc_start_info(psi_tmp); */
+      print_proc_start_info(psi_tmp);
 
       tmp_params_index=0;
       psi_tmp++;
@@ -134,7 +138,7 @@ int parse(char** params ,int args_len,struct proc_start_info **psi_out){
   /* print_proc_start_info(psi_tmp); */
   return pipe_char_count+1;
 }
-void exec(char* cmdline){
+void exec(char* cmdline) {
   char** params;
   int params_len,proc_len,i,j;
   struct proc_start_info *psi,*p,*p2;
@@ -145,11 +149,11 @@ void exec(char* cmdline){
   params_len=parse_args(cmdline,&params);
   proc_count= proc_len=parse(params,params_len,&psi);
   /* 打印启动每个进程相关的信息 */
-  /* p=psi; */
-  /* for (i = 0; i <proc_count; ++i){ */
-  /*   print_proc_start_info(p); */
-  /*   p++; */
-  /* } */
+  p=psi;
+  for (i = 0; i <proc_count; ++i){
+    /* print_proc_start_info(p); */
+    p++;
+  }
 
   p=psi;
   for (i = 0; i <proc_count; ++i){
@@ -260,9 +264,9 @@ void exec(char* cmdline){
   free_parse(psi,proc_len)  ;
   free_args(params,params_len);
 
-for (i = 0; i < proc_len; i++){
-  wait(NULL);
- }
+  for (i = 0; i < proc_len; i++){
+    wait(NULL);
+  }
 }
 /* int main(int argc, char *argv[]){ */
 /*   char str[100]="cat a"; */
@@ -281,8 +285,5 @@ int main(int argc, char *argv[]){
     exec(line);
     fprintf (stderr,"%s",PROMPT);
   }
-  fprintf(stderr,"error\n");
-  exit(1);
-
   return 0;
 }

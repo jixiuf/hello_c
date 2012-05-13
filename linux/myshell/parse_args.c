@@ -2,6 +2,10 @@
 #include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
+
 /* 返回token 的长度，解析后的token放在params_out中,如完需要调用 free_args() */
 /* 释放相应的内存 */
 /* 如果参数line的格式不对，返回-1,会自动释放已分配的内存,不需手动调用free_args */
@@ -208,7 +212,7 @@ void free_args(char** params,int len){
 /*   /\* char line[100]="ls -l|more>>\"|<>>b.out name\""; *\/ */
 /*   /\* char line[100]=" ls -l|more>>\"|<>>b.out name\""; *\/ */
 /*   /\* char line[100]=" ls -l|more>>\"|<>>b.out name\"  "; *\/ */
-/*   /\* char line[100]=" dd </dev/zero >/tmp/s "; *\/ */
+/*   char line[100]=" dd </dev/zero >/tmp/s "; */
 /*   printf ("%s\n",line); */
 /*   char** params,**p; */
 /*   int i; */
