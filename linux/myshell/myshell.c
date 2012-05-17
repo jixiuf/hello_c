@@ -62,7 +62,7 @@ int my_getline(char* line){
   if (i==LINE_MAX_LENGTH){
     return -1;
   }
-  printf ("str=%s\n",p);
+  /* printf ("str=%s\n",p); */
   return i;
 }
 int parse(char** params ,int args_len,struct proc_start_info **psi_out){
@@ -138,6 +138,7 @@ int parse(char** params ,int args_len,struct proc_start_info **psi_out){
   /* print_proc_start_info(psi_tmp); */
   return pipe_char_count+1;
 }
+
 void exec(char* cmdline) {
   char** params;
   int params_len,proc_len,i,j;
@@ -282,6 +283,9 @@ int main(int argc, char *argv[]){
   fprintf (stderr,"%s",PROMPT);
 
   while (my_getline(line)!=-1){
+    if(0==strcmp(line,"exit")){
+      exit(0);
+    }
     exec(line);
     fprintf (stderr,"%s",PROMPT);
   }
