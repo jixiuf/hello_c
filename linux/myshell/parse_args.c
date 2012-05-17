@@ -12,7 +12,7 @@
 int parse_args(char* line,char*** params_out){
   int str_len=strlen(line);
   /* 对与一个命令行 cmd，最多有 length(cmd)/2个token ,因为分隔符也要占一份  */
-  char* ptrs[strlen(line)/2];
+  char* ptrs[strlen(line)/2+1]; /* +1 for 奇偶/2结果不同,以防万一， */
   char *p=line;
   char **params ,**p2;
   int i,index,ptr_index=0,index_total=0;
@@ -42,7 +42,6 @@ int parse_args(char* line,char*** params_out){
   *params_out= params;
   /* printf ("%p\n",params_out); */
   /* printf ("%p\n",&params); */
-  printf ("cmd=%s,len=%d\n", line,strlen(line));
 
   return ptr_index;
 }
@@ -172,6 +171,8 @@ int get_next_token(char* line,char** got_token){
     if(quote==1){
       return -1;
     }
+  }else{
+    i++;
   }
   if(head==1){                  /* 如果解析到是是一个空串，返回0,此时并未动态分配内存 */
     return -2;
@@ -193,7 +194,7 @@ void free_args(char** params,int len){
   free(params);
 }
 /* int main(int argc, char *argv[]){ */
-/*   char line[100]="ls"; */
+/*   /\* char line[100]="l s"; *\/ */
 /*   /\* char line[100]="ls -l"; *\/ */
 /*   /\* char line[100]="ls -l>a.out"; *\/ */
 /*   /\* char line[100]="ls -l>>a.out"; *\/ */
