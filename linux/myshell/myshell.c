@@ -113,7 +113,7 @@ int parse(char** params ,int args_len,struct proc_start_info **psi_out){
       }
       psi_tmp->params=real_params;
 
-      print_proc_start_info(psi_tmp);
+      /* print_proc_start_info(psi_tmp); */
 
       tmp_params_index=0;
       psi_tmp++;
@@ -150,11 +150,11 @@ void exec(char* cmdline) {
   params_len=parse_args(cmdline,&params);
   proc_count= proc_len=parse(params,params_len,&psi);
   /* 打印启动每个进程相关的信息 */
-  p=psi;
-  for (i = 0; i <proc_count; ++i){
-    /* print_proc_start_info(p); */
-    p++;
-  }
+  /* p=psi; */
+  /* for (i = 0; i <proc_count; ++i){ */
+  /*   print_proc_start_info(p); */
+  /*   p++; */
+  /* } */
 
   p=psi;
   for (i = 0; i <proc_count; ++i){
