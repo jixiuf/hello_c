@@ -65,7 +65,10 @@ start(){
         n=read(clientfd,buf,1024);
         /* 转ip为string, af_inet 表示ipv4,client_addr.sin_addr类型的地址转成string 存到addr 中 */
         inet_ntop(AF_INET,&client_addr.sin_addr,&addr,sizeof(addr));
-
+        if(n==-1){
+          printf ("read error\n");
+          break;
+        }
         printf ("client [addr:%s],[port:%d],content:%s\n",
                 addr,
                 ntohs(client_addr.sin_port), buf); /* ntohs -net to host short  */
@@ -76,6 +79,7 @@ start(){
         write(clientfd,buf,n);
       }
       close(clientfd);
+      exit(1);
       /* printf ("cli\n"); */
     }else{                      /* parent */
       close(clientfd);
