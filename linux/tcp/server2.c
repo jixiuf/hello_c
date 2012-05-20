@@ -55,7 +55,7 @@ start(){
       exit(1);
     }
     if(pid==0){                 /* child */
-      close(serverfd)           /* 在子进程里关闭serverfd */
+      close(serverfd)           /* 在子进程里关闭serverfd */;
       while(1){
         n=read(clientfd,buf,1024);
         /* 转ip为string, af_inet 表示ipv4,client_addr.sin_addr类型的地址转成string 存到addr 中 */
