@@ -23,6 +23,7 @@ start(){
   struct sockaddr_in serv_addr,client_addr;
   socklen_t client_len;
   /* int socket(int domain, int type, int protocol); */
+  int opt = 1;
   serverfd=socket(AF_INET,SOCK_STREAM,0); /* AF_INET:ipv4, */
   if(serverfd==-1){
     perror("open server socket error!");
@@ -33,6 +34,9 @@ start(){
   serv_addr.sin_addr.s_addr=htonl(INADDR_ANY);
   serv_addr.sin_port=htons(SERVER_PORT);
   serv_addr.sin_family=AF_INET;
+
+  /* re use address  */
+  setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
   if(-1==bind(serverfd,(struct sockaddr*)&serv_addr,sizeof(serv_addr))){
     perror("bind error!");
@@ -50,10 +54,11 @@ start(){
     */
     client_len=sizeof(client_addr);
     clientfd= accept(serverfd,(struct sockaddr*)&client_addr,&client_len);
-    if (pid= fork()==-1){
+    if ((pid= fork())==-1){
       perror("fork error");
       exit(1);
     }
+    printf ("%d\n",pid);
     if(pid==0){                 /* child */
       close(serverfd)           /* 在子进程里关闭serverfd */;
       while(1){
@@ -71,8 +76,9 @@ start(){
         write(clientfd,buf,n);
       }
       close(clientfd);
-    }else if(pid>0){            /* parent */
-
+      /* printf ("cli\n"); */
+    }else{                      /* parent */
+      close(clientfd);
     }
   }
 
