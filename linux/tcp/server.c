@@ -43,7 +43,10 @@ start(){
     exit(1);
   }
   while(1){
-    /* client_len是一个传入传出参数，传入的是client_addr的长度，传出的是接收到的客户端的实际client_addr的长度 */
+    /* client_len是一个传入传出参数，传入的是调用者提供的缓冲区cliaddr的长度以
+       避免缓冲区溢出问题，传出的是客户端地址结构体的实际长度（有可能没有占满调
+       用者提供的缓冲区）
+        */
     client_len=sizeof(client_addr);
     clientfd= accept(serverfd,(struct sockaddr*)&client_addr,&client_len);
 
