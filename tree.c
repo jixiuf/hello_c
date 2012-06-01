@@ -79,67 +79,75 @@ int tree_del(tree_t *root ,Item item){
   int val;
   val=tree_seek(root->root,item,&to_be_del,&parent);
   if (val==-1) return -1;       /* 如果没找到要删除的 */
-  printf ("%p,%p\n",&to_be_del,root->root);
-  int cmp=item_cmp(&(root->root->item),&item);
-  if (cmp==0){    /* 处理，要删除的恰好是根节点的情况 */
-    /* printf ("deleteing root element\n"); */
-    free_node(to_be_del);
-    root->root=NULL;
-    root->size--;
-    return 0;                   /* 成功删除 */
-  }
+  /* int cmp=item_cmp(&(root->root->item),&item); */
   /* 根据 to_be_del的子节点个数分别进行处理 */
   if(to_be_del->left==NULL && to_be_del->right ==NULL){ /* 无左右子树， */
-    /* 无子树，直接将此节点删了，然后其其父节点指向null */
-    /* 需要得到其父节点，以便致空 */
-    if ((item_cmp(&(to_be_del->item),&(parent->item)))>0){ /* to_be_del是parent的右子树 */
-      parent->right=NULL;
-    }else{                      /* parent 是to_be_del的父 节点,故不必考虑两者相等状*/
-      parent->left=NULL;
+    if(parent==NULL){           /* 如果 to_be_del是根 */
+      root->root=NULL;
+    }else{
+      /* 无子树，直接将此节点删了，然后其其父节点指向null */
+      /* 需要得到其父节点，以便致空 */
+      if (parent->right==to_be_del){ /* to_be_del是parent的右子树 */
+        parent->right=NULL;
+      }else{                      /* parent 是to_be_del的父 节点,故不必考虑两者相等状*/
+        parent->left=NULL;
+      }
     }
-    free_node(to_be_del);
-    root->size--;
   }else if(to_be_del->left==NULL && to_be_del->right !=NULL){ /* 无左子树， */
-    if(item_cmp(&(to_be_del->item),&(parent->item))>0){ /* to_be_del是parent的右子树 */
-      parent->right=to_be_del->right;
-    }else{                      /* parent 是to_be_del的父 节点,故不必考虑两者相等状*/
-      parent->left=to_be_del->right;
+    if(parent==NULL){/* 如果 to_be_del是根 */
+      root->root=to_be_del->right;
+    }else{
+      if(parent->right==to_be_del){ /* to_be_del是parent的右子树 */
+        parent->right=to_be_del->right;
+      }else{                      /* parent 是to_be_del的父 节点,故不必考虑两者相等状*/
+        parent->left=to_be_del->right;
+      }
     }
-    free_node(to_be_del);
-    root->size--;
   }else if(to_be_del->left!=NULL && to_be_del->right ==NULL){ /* 无右子树， */
-    if(item_cmp(&(to_be_del->item),&(parent->item))>0){ /* to_be_del是parent的右子树 */
-      parent->right=to_be_del->left;
-    }else{                      /* parent 是to_be_del的父 节点,故不必考虑两者相等状*/
-      parent->left=to_be_del->left;
-    }
-    free_node(to_be_del);
-    root->size--;
-  }else if(to_be_del->left!=NULL && to_be_del->right !=NULL){ /* 有左右子树， */
-    tree_largest(to_be_del->left,&n,&p);                      /* 找到 to_be_del左子树中的最大值，存到n中，其父节点则存到p */
-    if(p==NULL){                                              /* 左子树只有一个叶子节点,只须让to_be_del->left 代替to_be_del的原来位置即可 */
-      if(item_cmp(&(to_be_del->item),&(parent->item))>0){ /* to_be_del是parent的右子树 */
+    if(parent==NULL){/* 如果 to_be_del是根 */
+      root->root=to_be_del->left;
+    }else{
+      if(parent->right==to_be_del){ /* to_be_del是parent的右子树 */
         parent->right=to_be_del->left;
       }else{                      /* parent 是to_be_del的父 节点,故不必考虑两者相等状*/
         parent->left=to_be_del->left;
+      }
+    }
+  }else if(to_be_del->left!=NULL && to_be_del->right !=NULL){ /* 有左右子树， */
+    tree_largest(to_be_del->left,&n,&p);                      /* 找到 to_be_del左子树中的最大值，存到n中，其父节点则存到p */
+    if(p==NULL){                                              /* 左子树只有一个叶子节点,只须让to_be_del->left 代替to_be_del的原来位置即可 */
+      if(parent==NULL){                                       /* to_be_del是根 */
+        /* to_be_del->left是叶子节点，让其成为root,代代替 to_be_del,并将其指向 to_be_del的右节点 */
+        root->root=to_be_del->left;
+        root->root->right=to_be_del->right;
+      }else{
+        if(parent->right==to_be_del){ /* to_be_del是parent的右子树 */
+          parent->right=to_be_del->left;
+        }else{                      /* parent 是to_be_del的父 节点,故不必考虑两者相等状*/
+          parent->left=to_be_del->left;
+        }
       }
     }else{                     /* n!=NULL,p!=NULL */
       p->right=NULL;            /* p不在指向这个刚到的最大值n,因为要把n移到 to_be_del的位置 */
       n->left=to_be_del->left;
       n->right=to_be_del->right;
-      if(item_cmp(&(to_be_del->item),&(parent->item))>0){ /* to_be_del是parent的右子树 */
-        parent->right=n;
-      }else{                      /* parent 是to_be_del的父 节点,故不必考虑两者相等状*/
-        parent->left=n;
+      if(parent==NULL){
+        root->root=n;
+      }else{
+        if(parent->right==to_be_del){ /* to_be_del是parent的右子树 */
+          parent->right=n;
+        }else{                      /* parent 是to_be_del的父 节点,故不必考虑两者相等状*/
+          parent->left=n;
+        }
       }
     }
-    free_node(to_be_del);
-    root->size--;
   }
+  free_node(to_be_del);
+  root->size--;
   return 0;
 }
 
-/* 从parent树中寻找最大的node,存到no中，其父节点存到par中，若无父，则par=NULL ,
+/* private 从parent树中寻找最大的node,存到no中，其父节点存到par中，若无父，则par=NULL ,
    只需一路寻找右节点，直到null即寻到最大值
  */
 int tree_largest(node_t *parent ,node_t **no,node_t **par){
@@ -244,8 +252,8 @@ int main(int argc, char *argv[]){
   printf ("\n%d,%d\n",n->item,p->item);
 
 
-   tree_del(&t,10);
-   printf ("%d\n",t.root->item);
+  tree_del(&t,5);
+  printf ("%d\n",t.root->item);
 
   return 0;
 }
