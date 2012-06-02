@@ -231,29 +231,106 @@ int free_node(node_t *n){
   free(n);
 }
 
+mid_visit(tree_t *t,void (*v)(Item i)){
+  printf ("middle visit tree\n");
+  mid_visit_node(t->root,v);
+}
+
+mid_visit_node(node_t* n,void (*v)(Item i)){
+  if(n){
+    v(n->item);
+    /* printf ("%d\n",n->item); */
+  }
+  if(n->left){
+    mid_visit_node(n->left,v);
+  }
+  if(n->right){
+    mid_visit_node(n->right,v);
+  }
+}
+
+after_visit(tree_t *t,void (*v)(Item i)){
+  printf ("after visit tree\n");
+  after_visit_node(t->root,v);
+}
+after_visit_node(node_t* n,void (*v)(Item i)){
+  if(n->right){
+    after_visit_node(n->right,v);
+  }
+  if(n){
+    v(n->item);
+    /* printf ("%d\n",n->item); */
+  }
+  if(n->left){
+    after_visit_node(n->left,v);
+  }
+
+}
+
+previous_visit(tree_t *t,void (*v)(Item i)){
+  printf ("previous visit tree\n");
+  previous_visit_node(t->root,v);
+}
+previous_visit_node(node_t* n,void (*v)(Item i)){
+  if(n->left){
+    previous_visit_node(n->left,v);
+  }
+  if(n){
+    v(n->item);
+    /* printf ("%d\n",n->item); */
+  }
+  if(n->right){
+    previous_visit_node(n->right,v);
+  }
+}
+
+void print_(Item i ){
+  printf ("visit %d\n",i);
+}
+
+       /*              10 */
+       /*       5              15 */
+       /*   2       8       13      18 */
+       /* 1   3   6   9   11   14  16  19 */
+       /*      4    7       12       17 */
 int main(int argc, char *argv[]){
   tree_t t ;
   node_t *n,*p;
   int val;
   tree_init(&t);
   tree_add(&t,10);
-  tree_add(&t,100);
   tree_add(&t,5);
-  tree_add(&t,95);
-  printf ("%d\n",t.size);
-  printf ("%d\n",t.root->item);
-  printf ("%d\n",t.root->right->item);
-  printf ("%d\n",t.root->right->left->item);
-  printf ("%d\n",t.root->left->item);
-  tree_seek(t.root ,95,&n,&p);
-  printf ("\n%d\n",n->item);
+  tree_add(&t,15);
+  tree_add(&t,2);
+  tree_add(&t,8);
+  tree_add(&t,13);
+  tree_add(&t,18);
+  tree_add(&t,1);
+  tree_add(&t,3);
+  tree_add(&t,6);
+  tree_add(&t,9);
+  tree_add(&t,11);
+  tree_add(&t,14);
+  tree_add(&t,16);
+  tree_add(&t,19);
+  tree_add(&t,4);
+  tree_add(&t,7);
+  tree_add(&t,12);
+  tree_add(&t,17);
+  /* printf ("%d\n",t.size); */
+  /* printf ("%d\n",t.root->item); */
+  /* printf ("%d\n",t.root->right->item); */
+  /* printf ("%d\n",t.root->right->left->item); */
+  /* printf ("%d\n",t.root->left->item); */
+  /* tree_seek(t.root ,95,&n,&p); */
+  /* printf ("\n%d\n",n->item); */
 
-  tree_largest(t.root,&n,&p);
-  printf ("\n%d,%d\n",n->item,p->item);
-
-
-  tree_del(&t,5);
-  printf ("%d\n",t.root->item);
-
+  /* tree_largest(t.root,&n,&p); */
+  /* printf ("\n%d,%d\n",n->item,p->item); */
+  /* tree_del(&t,5); */
+  /* printf ("%d\n",t.root->item); */
+  previous_visit(&t,print_);
+  after_visit(&t,print_);
+  mid_visit(&t,print_);
   return 0;
 }
