@@ -126,6 +126,7 @@ int tree_del(tree_t *root ,Item item){
         }else{                      /* parent 是to_be_del的父 节点,故不必考虑两者相等状*/
           parent->left=to_be_del->left;
         }
+        n->right = to_be_del->right;
       }
     }else{                     /* n!=NULL,p!=NULL */
       p->right=NULL;            /* p不在指向这个刚到的最大值n,因为要把n移到 to_be_del的位置 */
@@ -151,14 +152,14 @@ int tree_del(tree_t *root ,Item item){
    只需一路寻找右节点，直到null即寻到最大值
  */
 int tree_largest(node_t *parent ,node_t **no,node_t **par){
+  node_t *p,*n;
+  p=NULL;
+  n=parent;
   if(parent==NULL){
     *no=NULL;
     *par=NULL;
     return -1;
   }
-  node_t *p,*n;
-  p=NULL;
-  n=parent;
   while(n->right!=NULL){
     p=n;
     n=n->right;
@@ -330,7 +331,8 @@ int main(int argc, char *argv[]){
   /* tree_del(&t,5); */
   /* printf ("%d\n",t.root->item); */
   previous_visit(&t,print_);
-  after_visit(&t,print_);
-  mid_visit(&t,print_);
+  /* after_visit(&t,print_); */
+  /* mid_visit(&t,print_); */
+
   return 0;
 }
