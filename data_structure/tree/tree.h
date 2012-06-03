@@ -29,11 +29,11 @@ int tree_add(tree_t *root,Item item);
 int tree_del(tree_t *root ,Item item);
 /* 返回tree size */
 int tree_size(tree_t *root);
-/* 中序遍历 */
+/* 中序遍历LNR */
 void mid_visit(tree_t *t,void (*v)(Item i));
-/* 后序遍历 */
+/* 后序遍历LRN */
 void after_visit(tree_t *t,void (*v)(Item i));
-/* 前序遍历 */
+/* 前序遍历NLR */
 void previous_visit(tree_t *t,void (*v)(Item i));
 
 #endif
