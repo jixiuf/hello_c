@@ -214,12 +214,12 @@ int free_node(node_t *n){
 
 
 void mid_visit_node(node_t* n,void (*v)(Item i)){
+  if(n->left){
+    mid_visit_node(n->left,v);
+  }
   if(n){
     v(n->item);
     /* printf ("%d\n",n->item); */
-  }
-  if(n->left){
-    mid_visit_node(n->left,v);
   }
   if(n->right){
     mid_visit_node(n->right,v);
@@ -231,15 +231,15 @@ void mid_visit(tree_t *t,void (*v)(Item i)){
 }
 
 void after_visit_node(node_t* n,void (*v)(Item i)){
+  if(n->left){
+    after_visit_node(n->left,v);
+  }
   if(n->right){
     after_visit_node(n->right,v);
   }
   if(n){
     v(n->item);
     /* printf ("%d\n",n->item); */
-  }
-  if(n->left){
-    after_visit_node(n->left,v);
   }
 
 }
@@ -249,12 +249,12 @@ void after_visit(tree_t *t,void (*v)(Item i)){
 }
 
 void previous_visit_node(node_t* n,void (*v)(Item i)){
-  if(n->left){
-    previous_visit_node(n->left,v);
-  }
   if(n){
     v(n->item);
     /* printf ("%d\n",n->item); */
+  }
+  if(n->left){
+    previous_visit_node(n->left,v);
   }
   if(n->right){
     previous_visit_node(n->right,v);
