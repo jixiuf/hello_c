@@ -7,24 +7,8 @@
 #include <malloc.h>
 #include <string.h>
 #include <assert.h>
-typedef int Item;
+#include "avl_tree.h"
 
-struct avl_node {
-  Item item;
-  struct avl_node * left;
-  struct avl_node * right;
-  int height;
-};
-
-typedef struct avl_node avl_node_t;
-
-struct avl_tree{
-  avl_node_t * root;
-  int size;
-  int (*item_cmp)(Item* item1,Item* item2);
-};
-
-typedef struct avl_tree avl_tree_t;
 
 int avl_max_height(int height1,int height2){
   return height1>height2?height1:height2;
@@ -130,30 +114,90 @@ avl_node_t *avl_left_right_rotate(avl_node_t* a){
 /* } */
 
 
-void avl_make_node(Item item,avl_node_t **node){
+int avl_make_node(Item item,avl_node_t **node){
   avl_node_t* n;
   n=(avl_node_t*)malloc(sizeof(avl_node_t));
-  n->left=NULL;
-  n->right=NULL;
-  n->height=0;
-  n->item=item;
-  *node=n;
+  if(n){
+    n->left=NULL;
+    n->right=NULL;
+    n->height=0;
+    n->item=item;
+    *node=n;
+    return 0;
+  }
+  return -1;
 }
 
-avl_node_t* avl_node_add(avl_node_t* parent,Item item){
-  avl_node_t *new_node;
-  avl_make_node(item,&new_node);
-  if(!parent){
-    return new_node;
-  }
-}
-void avl_add(avl_tree_t* avl,Item item){
-  avl_node_add(avl->root,item);
-}
 
 void avl_free_node(avl_node_t *node){
   free(node);
 }
+
+int avl_node_add(avl_node_t** parent,Item item,int (*item_cmp)(Item* item1,Item* item2)){
+  avl_node_t *new_node;
+  int cmp,ret;
+  if(avl_make_node(item,&new_node)!=-1){
+    if(*parent){
+      cmp=item_cmp(&((*parent)->item),&item);
+      if(cmp>0){              /* 插入到左子树中 */
+        ret=avl_node_add(&((*parent)->left),item,item_cmp);
+        if(ret>-1){
+          if(2==avl_node_height((*parent)->left)-avl_node_height((*parent)->right)){ /* 如果左右不平衡 */
+            if(item_cmp(&item,&((*parent)->left->item))>0){ /* >0  ,插入到左子树的右子树中 */
+              *parent=avl_left_right_rotate(*parent);
+            }else{ /* <0的情况 (不会出现==0的情况，==0时不会出现不平衡),插入到左子树的左子树中 */
+              *parent=avl_single_right_rotate(*parent);
+            }
+            /* *parent->height= 1+ avl_max_height() */
+          }
+        }else{
+          return ret;
+        }
+      }else if(cmp<0){              /* 插入到右子树中 */
+        ret=avl_node_add(&(*parent)->right,item,item_cmp);
+        if(ret>-1){
+          if(2==avl_node_height((*parent)->right)-avl_node_height((*parent)->left)){ /* 如果左右不平衡 */
+            if(item_cmp(&item,&((*parent)->right->item))>0){ /* >0  ,插入到右子树的右子树中 */
+              *parent=avl_single_right_rotate(*parent);
+            }else{ /* <0的情况 (不会出现==0的情况，==0时不会出现不平衡),插入到右子树的左子树中 */
+              *parent=avl_right_left_rotate(*parent);
+            }
+          }
+        }else{
+          return ret;
+        }
+
+      }else{                  /* 暂不支持重复元素 */
+        avl_free_node(new_node);
+        return -1;
+      }
+    }else{
+      *parent=new_node;
+    }
+    (*parent)->height= 1+ avl_max_height(avl_node_height((*parent)->left),avl_node_height((*parent)->right));
+    return 0;
+  }else{
+    return -1;
+  }
+}
+int avl_add(avl_tree_t* avl,Item item){
+  int ret=avl_node_add(&(avl->root),item,avl->item_cmp);
+  if(ret!= -1){
+    avl->size++;
+  }
+  return ret;
+}
+
+void avl_init(avl_tree_t* tree,int (*item_cmp)(Item* item1,Item* item2)){
+  tree->size=0;
+  tree->root=NULL;
+  tree->item_cmp=item_cmp;
+}
+
+int avl_size(avl_tree_t * avl){
+  return avl->size;
+}
+
 /*
      ##5                 #4#
      #4#    ------>      3#5
@@ -349,10 +393,103 @@ int test_left_right_rotate(){
 
 }
 
+int int_cmp(Item *i1, Item *i2){
+  int *i1_int = (int*) i1;
+  int *i2_int = (int*) i2;
+  return (*i1_int - *i2_int);
+}
+
+/*
+     10           5
+   5    --->    2  10
+ 2                    18
+
+ */
+void test_avl_add(){
+  avl_tree_t tree;
+  avl_init(&tree,int_cmp);
+  avl_add(&tree,10);
+  avl_add(&tree,5);
+  avl_add(&tree,2);
+  avl_add(&tree,18);
+  assert(5==tree.root->item);
+  assert(2==tree.root->left->item);
+  assert(10==tree.root->right->item);
+  assert(18==tree.root->right->right->item);
+
+  assert(2==tree.root->height);
+  assert(0==tree.root->left->height);
+  assert(1==tree.root->right->height);
+  assert(0==tree.root->right->right->height);
+}
+/*
+     10           5                    5
+   5    --->    2  10   ---->      2      16
+ 2                    18                10  18
+ */
+
+void test_avl_add2(){
+  avl_tree_t tree;
+  avl_init(&tree,int_cmp);
+  avl_add(&tree,10);
+  avl_add(&tree,5);
+  avl_add(&tree,2);
+  avl_add(&tree,18);
+  avl_add(&tree,16);
+  assert(5==tree.root->item);
+  assert(2==tree.root->left->item);
+  assert(16==tree.root->right->item);
+  assert(18==tree.root->right->right->item);
+  assert(10==tree.root->right->left->item);
+
+  assert(2==tree.root->height);
+  assert(0==tree.root->left->height);
+  assert(1==tree.root->right->height);
+  assert(0==tree.root->right->right->height);
+  assert(0==tree.root->right->left->height);
+}
+
+/*
+     10           5                    5                    5                   5                10
+   5    --->    2  10   ---->      2      16 ---->       2    16       --->   2    10          5    16
+ 2                    18                10  18              10   18               8  16       2  8     18
+                                                           8                            18
+ */
+
+void test_avl_add3(){
+  avl_tree_t tree;
+  avl_init(&tree,int_cmp);
+  avl_add(&tree,10);
+  avl_add(&tree,5);
+  avl_add(&tree,2);
+  avl_add(&tree,18);
+  avl_add(&tree,16);
+  avl_add(&tree,8);
+  assert(10==tree.root->item);
+  assert(5==tree.root->left->item);
+  assert(16==tree.root->right->item);
+  assert(2==tree.root->left->left->item);
+  assert(8==tree.root->left->right->item);
+  assert(16==tree.root->right->item);
+  assert(18==tree.root->right->right->item);
+
+  assert(2==tree.root->height);
+  assert(1==tree.root->left->height);
+  assert(1==tree.root->right->height);
+  assert(0==tree.root->left->left->height);
+  assert(0==tree.root->left->right->height);
+  assert(0==tree.root->right->right->height);
+}
+
+
+
 int main(int argc, char *argv[]){
   test_avl_single_right_rotate();
   test_avl_single_left_rotate();
   test_right_left_rotate();
   test_left_right_rotate();
+  test_avl_add();
+  test_avl_add2();
+  test_avl_add3();
   return 0;
 }
