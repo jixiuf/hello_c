@@ -80,20 +80,25 @@ avl_node_t *avl_single_left_rotate(avl_node_t* a){
    6 9             9
  */
 avl_node_t *avl_right_left_rotate(avl_node_t* a){
-  avl_node_t* b=a->right;
-  avl_node_t* c=b->left;
-
-  b->left=c->right;
-  c->right= b;
-  b->height=1+avl_max_height(avl_node_height(b->left),avl_node_height(b->right));
-  c->height=1+avl_max_height(avl_node_height(c->left),avl_node_height(c->right));
-  /* 第二轮 */
-  a->right=c->left;
-  c->left=a;
-  a->height =1+avl_max_height(avl_node_height(a->left),avl_node_height(a->right));
-  c->height =1+avl_max_height(avl_node_height(c->left),avl_node_height(c->right));
-  return c;
+  a->right=avl_single_right_rotate(a->right);
+  return avl_single_left_rotate(a);
 }
+
+/* avl_node_t *avl_right_left_rotate(avl_node_t* a){ */
+/*   avl_node_t* b=a->right; */
+/*   avl_node_t* c=b->left; */
+
+/*   b->left=c->right; */
+/*   c->right= b; */
+/*   b->height=1+avl_max_height(avl_node_height(b->left),avl_node_height(b->right)); */
+/*   c->height=1+avl_max_height(avl_node_height(c->left),avl_node_height(c->right)); */
+/*   /\* 第二轮 *\/ */
+/*   a->right=c->left; */
+/*   c->left=a; */
+/*   a->height =1+avl_max_height(avl_node_height(a->left),avl_node_height(a->right)); */
+/*   c->height =1+avl_max_height(avl_node_height(c->left),avl_node_height(c->right)); */
+/*   return c; */
+/* } */
 /* 先左旋，后右旋
      ##a        ##a         ###
      #b#------> #c#-------> #c#
@@ -101,22 +106,28 @@ avl_node_t *avl_right_left_rotate(avl_node_t* a){
      第一轮旋转(左旋)，如果c有左子树(比c小，比b大)，则旋转后，成为b的右子树(首轮旋转与a无关,以b为轴，使c转到轴心处)
      第二转旋转(右旋),c有右子树(比c大，比a小)，则旋转后，成为a的左子树(以c为轴)
  */
+
 avl_node_t *avl_left_right_rotate(avl_node_t* a){
-  avl_node_t* b=a->left;
-  avl_node_t* c=b->right;
-
-  b->right=c->left;
-  c->left= b;
-  b->height=1+avl_max_height(avl_node_height(b->left),avl_node_height(b->right));
-  c->height=1+avl_max_height(avl_node_height(c->left),avl_node_height(c->right));
-
-  /* 第二轮 */
-  a->left=c->right;
-  c->right=a;
-  a->height =1+avl_max_height(avl_node_height(a->left),avl_node_height(a->right));
-  c->height =1+avl_max_height(avl_node_height(c->left),avl_node_height(c->right));
-  return c;
+  a->left=avl_single_left_rotate(a->left);
+  return avl_single_right_rotate(a);
 }
+/* 注释的这段代码可用，但罗嗦 */
+/* avl_node_t *avl_left_right_rotate(avl_node_t* a){ */
+/*   avl_node_t* b=a->left; */
+/*   avl_node_t* c=b->right; */
+
+/*   b->right=c->left; */
+/*   c->left= b; */
+/*   b->height=1+avl_max_height(avl_node_height(b->left),avl_node_height(b->right)); */
+/*   c->height=1+avl_max_height(avl_node_height(c->left),avl_node_height(c->right)); */
+
+/*   /\* 第二轮 *\/ */
+/*   a->left=c->right; */
+/*   c->right=a; */
+/*   a->height =1+avl_max_height(avl_node_height(a->left),avl_node_height(a->right)); */
+/*   c->height =1+avl_max_height(avl_node_height(c->left),avl_node_height(c->right)); */
+/*   return c; */
+/* } */
 
 
 void avl_make_node(Item item,avl_node_t **node){
