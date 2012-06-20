@@ -73,6 +73,54 @@ rb_node_t *rb_single_left_rotate(rb_node_t* a){
   return b;
 }
 
+
+/* 先右旋，后左旋
+     a##        a##         ###
+     #b#------> #c#-------> #c#
+     c##        ##b         a#b
+     第一轮旋转(右旋)，如果c有右子树，则旋转后，成为b的左子树(首轮旋转与a无关,以b为轴，使c转到轴心处)
+     第二转旋转(左旋),c有左子树(比c小，比a大)，则旋转后，成为a的右子树(以c为轴)
+   5            5                 8
+      10->         8           5    10
+    8            6  10          6  9
+   6 9             9
+ */
+rb_node_t *rb_right_left_rotate(rb_node_t* a){
+  a->right=rb_single_right_rotate(a->right);
+  a->right->parent=a;
+  return rb_single_left_rotate(a);
+}
+
+/* rb_node_t *rb_right_left_rotate(rb_node_t* a){ */
+/*   rb_node_t* b=a->right; */
+/*   rb_node_t* c=b->left; */
+
+/*   b->left=c->right; */
+/*   c->right= b; */
+/*   b->height=1+rb_max_height(rb_node_height(b->left),rb_node_height(b->right)); */
+/*   c->height=1+rb_max_height(rb_node_height(c->left),rb_node_height(c->right)); */
+/*   /\* 第二轮 *\/ */
+/*   a->right=c->left; */
+/*   c->left=a; */
+/*   a->height =1+rb_max_height(rb_node_height(a->left),rb_node_height(a->right)); */
+/*   c->height =1+rb_max_height(rb_node_height(c->left),rb_node_height(c->right)); */
+/*   return c; */
+/* } */
+/* 先左旋，后右旋
+     ##a        ##a         ###
+     #b#------> #c#-------> #c#
+     ##c        b##         b#a
+     第一轮旋转(左旋)，如果c有左子树(比c小，比b大)，则旋转后，成为b的右子树(首轮旋转与a无关,以b为轴，使c转到轴心处)
+     第二转旋转(右旋),c有右子树(比c大，比a小)，则旋转后，成为a的左子树(以c为轴)
+ */
+
+rb_node_t *rb_left_right_rotate(rb_node_t* a){
+  a->left=rb_single_left_rotate(a->left);
+  a->left->parent=a;
+  return rb_single_right_rotate(a);
+}
+
+
 void rb_init(rb_tree_t* tree,int (*item_cmp)(Item* item1,Item* item2)){
   tree->size=0;
   tree->root=NULL;
@@ -104,11 +152,127 @@ int rb_is_black(rb_node_t *node){
   }
 }
 /* 尝试恢复因插入而引起的失衡,
-   因为加入的是红节点，则加入此节点的子树因多了一个红节点
  */
-int rb_node_add_fixup(rb_node_t **node){
-  if(!rb_is_black((*node)->parent)){ /* 如果父节点也是红，则需要调整 */
+/*     D */
+/*   B  C */
+/* A */
+ /*  插入的分析，对于新插入的元素A，默认它是红色的 */
+ /*  1). 如果A的父节点是黑元素，则一切正常 ，不需要变换， */
+ /*  2). 如果A的父节点B是红元素(可推出祖父D为黑)，则需要将父节点B变成黑元素，以维护性质4 */
+ /*  但是B变成黑元素后，此子树上因多了此黑元素，导致性质5不成立.() */
+ /*  处理方法需要节点B的兄弟节点C(即A的uncle)的颜色而定 */
+ /*  2.1). 如果C为红)，则将C变成黑,然后把祖父D变成红,此时D变成红色，做法与初插入A时的处理方法一样 */
+ /*  ，向上依次检测是否有冲突 */
+ /*  2.2). 如果C为黑色，此种情况相对简单，只需要对ABD进行旋转，使A、D成为B的子节点 */
+ /*      此时 */
+ /*          D(黑) */
+ /*        B(红)  --->   B(红)  ------->   B(黑) */
+ /*      A（红）       A(红)  D(黑)       A(红)  D（红） */
+ /*      此时，插入的A只是颜色冲突，进行上述旋转变色后，解决了红红冲突，且可以维护性质5 */
+ /* 当然根据A B的位置 转换方式可能不同,总之旋转之后，是上为黑下二为红 */
 
+int rb_node_add_fixup(rb_node_t **node,rb_node_t **root){
+  /* 不必考虑根为空的情况， rb_node_add里已做特殊处理,
+     也就是说新插入的元素一定有父节点，
+     须考虑新插入元素无祖父的情况(也极简单，根为黑，新元素为红，为根的孩子，不须fixup，)
+     实际的情况是也不需要考虑无祖父的情况
+   */
+  rb_node_t *parent ,*grantp,*grantgrantp,*uncle,*tmp_node;
+  parent=(*node)->parent;
+  grantp=parent->parent;
+  if(!rb_is_black(parent)){ /* 如果父节点也是红，则需要调整 */
+    grantgrantp=grantp->parent; /* 如果父节点为红，则grantp一定不为null */
+    p->color =BLACK;
+    if(grantp->left==parent){
+      uncle=grantp->right;
+    }else{
+      uncle=grantp->left;
+    }
+    if(uncle->color==BLACK){
+      if(grantp->left==parent){
+        if(parent->left==*node){
+                   /***********/
+                   /*       D */
+                   /*    B    */
+                   /* A       */
+                   /***********/
+          parent->color=BLACK;
+          grantp->color=RED;
+          if(grantgrantp){
+            if(grantgrantp->left==grantp){
+              grantgrantp->left=rb_single_right_rotate(grantp);
+            }else{
+                grantgrantp->right=rb_single_right_rotate(grantp);
+            }
+          }else{
+            *root=rb_single_right_rotate(grantp);
+          }
+        }else{                  /* (parent->right==*node) */
+                   /***********/
+                   /*       D */
+                   /*    B    */
+                   /*       A */
+                   /***********/
+          parent->color=RED;
+          grantp->color=RED;
+          *node->color=BLACK;
+          if(grantgrantp){
+            if(grantgrantp->left==grantp){
+              grantgrantp->left=rb_left_right_rotate(grantp);
+            }else{
+                grantgrantp->right=rb_left_right_rotate(grantp);
+            }
+          }else{
+            *root=rb_left_right_rotate(grantp);
+          }
+        }
+      }else{                    /* (grantp->right==parent) */
+        if(parent->left==*node){
+                   /***********/
+                   /*  D      */
+                   /*    B    */
+                   /* A       */
+                   /***********/
+          parent->color=RED;
+          grantp->color=RED;
+          *node->color=BLACK;
+          if(grantgrantp){
+            if(grantgrantp->left==grantp){
+              grantgrantp->left=rb_right_left_rotate(grantp);
+            }else{
+                grantgrantp->right=rb_right_left_rotate(grantp);
+            }
+          }else{
+            *root=rb_right_left_rotate(grantp);
+          }
+        }else{                  /* (parent->right==*node) */
+                   /***********/
+                   /* D       */
+                   /*    B    */
+                   /*       A */
+                   /***********/
+          parent->color=BLACK;
+          grantp->color=RED;
+          *node->color=RED;
+          if(grantgrantp){
+            if(grantgrantp->left==grantp){
+              grantgrantp->left=rb_left_right_rotate(grantp);
+            }else{
+                grantgrantp->right=rb_left_right_rotate(grantp);
+            }
+          }else{
+            *root=rb_left_right_rotate(grantp);
+          }
+        }
+
+      }
+    }else{                      /* uncle is red */
+      /*  2.1). 如果C为红)，则将C变成黑,然后把祖父D变成红,此时D变成红色，做法与初插入A时的处理方法一样 */
+      /*  ，向上依次检测是否有冲突 */
+      uncle->color=BLACK;
+      grantp->color=RED;
+      rb_node_add_fixup(&((*node)->parent->parent),root);
+    }
   }
 }
 
@@ -132,12 +296,14 @@ int rb_node_add(rb_node_t **root,rb_node_t *new_node,int (*item_cmp)(Item* item1
     }else if (cmp<0){
       new_node->parent->right= new_node;
     }
-    rb_node_add_fixup(new_node);
+    rb_node_add_fixup(new_node,root);
   }else{                        /* 如果树中根为空 */
     *root=new_node;
+    *root->color=BLACK;         /* 默认根为黑 */
   }
   return 0;
 }
+
 int rb_add(rb_tree_t* tree,Item item){
   int ret;
   rb_node_t *new_node;
@@ -150,7 +316,21 @@ int rb_add(rb_tree_t* tree,Item item){
   }
   return ret;
 }
+/* test */
+int int_cmp(Item *i1, Item *i2){
+  int *i1_int = (int*) i1;
+  int *i2_int = (int*) i2;
+  return (*i1_int - *i2_int);
+}
 
+
+void test_add(){
+  rb_tree tree;
+  rb_init(&tree,int_cmp);
+  rb_add(&tree,10);
+  rb_add(5);
+  rb_add(1);
+}
 int main(int argc, char *argv[]){
 
   return 0;
