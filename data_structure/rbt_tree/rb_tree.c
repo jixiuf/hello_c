@@ -171,18 +171,18 @@ int rb_is_black(rb_node_t *node){
  /*      此时，插入的A只是颜色冲突，进行上述旋转变色后，解决了红红冲突，且可以维护性质5 */
  /* 当然根据A B的位置 转换方式可能不同,总之旋转之后，是上为黑下二为红 */
 
-int rb_node_add_fixup(rb_node_t **node,rb_node_t **root){
+int rb_node_add_fixup(rb_node_t *node,rb_node_t **root){
   /* 不必考虑根为空的情况， rb_node_add里已做特殊处理,
      也就是说新插入的元素一定有父节点，
      须考虑新插入元素无祖父的情况(也极简单，根为黑，新元素为红，为根的孩子，不须fixup，)
      实际的情况是也不需要考虑无祖父的情况
    */
   rb_node_t *parent ,*grantp,*grantgrantp,*uncle,*tmp_node;
-  parent=(*node)->parent;
+  parent=node->parent;
   grantp=parent->parent;
   if(!rb_is_black(parent)){ /* 如果父节点也是红，则需要调整 */
     grantgrantp=grantp->parent; /* 如果父节点为红，则grantp一定不为null */
-    p->color =BLACK;
+    parent->color =BLACK;
     if(grantp->left==parent){
       uncle=grantp->right;
     }else{
@@ -190,7 +190,7 @@ int rb_node_add_fixup(rb_node_t **node,rb_node_t **root){
     }
     if(uncle->color==BLACK){
       if(grantp->left==parent){
-        if(parent->left==*node){
+        if(parent->left==node){
                    /***********/
                    /*       D */
                    /*    B    */
@@ -207,7 +207,7 @@ int rb_node_add_fixup(rb_node_t **node,rb_node_t **root){
           }else{
             *root=rb_single_right_rotate(grantp);
           }
-        }else{                  /* (parent->right==*node) */
+        }else{                  /* (parent->right==node) */
                    /***********/
                    /*       D */
                    /*    B    */
@@ -215,7 +215,7 @@ int rb_node_add_fixup(rb_node_t **node,rb_node_t **root){
                    /***********/
           parent->color=RED;
           grantp->color=RED;
-          *node->color=BLACK;
+          node->color=BLACK;
           if(grantgrantp){
             if(grantgrantp->left==grantp){
               grantgrantp->left=rb_left_right_rotate(grantp);
@@ -227,7 +227,7 @@ int rb_node_add_fixup(rb_node_t **node,rb_node_t **root){
           }
         }
       }else{                    /* (grantp->right==parent) */
-        if(parent->left==*node){
+        if(parent->left==node){
                    /***********/
                    /*  D      */
                    /*    B    */
@@ -235,7 +235,7 @@ int rb_node_add_fixup(rb_node_t **node,rb_node_t **root){
                    /***********/
           parent->color=RED;
           grantp->color=RED;
-          *node->color=BLACK;
+          node->color=BLACK;
           if(grantgrantp){
             if(grantgrantp->left==grantp){
               grantgrantp->left=rb_right_left_rotate(grantp);
@@ -245,7 +245,7 @@ int rb_node_add_fixup(rb_node_t **node,rb_node_t **root){
           }else{
             *root=rb_right_left_rotate(grantp);
           }
-        }else{                  /* (parent->right==*node) */
+        }else{                  /* (parent->right==node) */
                    /***********/
                    /* D       */
                    /*    B    */
@@ -253,7 +253,7 @@ int rb_node_add_fixup(rb_node_t **node,rb_node_t **root){
                    /***********/
           parent->color=BLACK;
           grantp->color=RED;
-          *node->color=RED;
+          node->color=RED;
           if(grantgrantp){
             if(grantgrantp->left==grantp){
               grantgrantp->left=rb_left_right_rotate(grantp);
@@ -271,7 +271,7 @@ int rb_node_add_fixup(rb_node_t **node,rb_node_t **root){
       /*  ，向上依次检测是否有冲突 */
       uncle->color=BLACK;
       grantp->color=RED;
-      rb_node_add_fixup(&((*node)->parent->parent),root);
+      rb_node_add_fixup(node->parent->parent,root);
     }
   }
 }
@@ -286,9 +286,9 @@ int rb_node_add(rb_node_t **root,rb_node_t *new_node,int (*item_cmp)(Item* item1
       if(cmp==0){
         return -1;
       }else if(cmp>0){
-        n=>n->left;
+        n=n->left;
       }else if(cmp<0){
-        n=>n->right;
+        n=n->right;
       }
     }
     if(cmp>0){
@@ -299,7 +299,7 @@ int rb_node_add(rb_node_t **root,rb_node_t *new_node,int (*item_cmp)(Item* item1
     rb_node_add_fixup(new_node,root);
   }else{                        /* 如果树中根为空 */
     *root=new_node;
-    *root->color=BLACK;         /* 默认根为黑 */
+    (*root)->color=BLACK;         /* 默认根为黑 */
   }
   return 0;
 }
@@ -325,13 +325,14 @@ int int_cmp(Item *i1, Item *i2){
 
 
 void test_add(){
-  rb_tree tree;
+  rb_tree_t tree;
   rb_init(&tree,int_cmp);
   rb_add(&tree,10);
-  rb_add(5);
-  rb_add(1);
+  rb_add(&tree,5);
+  rb_add(&tree,1);
+  assert(3==tree.size);
 }
 int main(int argc, char *argv[]){
-
+  test_add();
   return 0;
 }
