@@ -174,108 +174,112 @@ int rb_is_black(rb_node_t *node){
 int rb_node_add_fixup(rb_node_t *node,rb_node_t **root){
   /* 不必考虑根为空的情况， rb_node_add里已做特殊处理,
      也就是说新插入的元素一定有父节点，
-     须考虑新插入元素无祖父的情况(也极简单，根为黑，新元素为红，为根的孩子，不须fixup，)
-     实际的情况是也不需要考虑无祖父的情况
-   */
-  rb_node_t *parent ,*grantp,*grantgrantp,*uncle,*tmp_node;
-  parent=node->parent;
-  if(!parent){
-    node->color=BLACK;
-    return 0;
-  }
-  grantp=parent->parent;
-  if(!rb_is_black(parent)){ /* 如果父节点也是红，则需要调整 */
-    grantgrantp=grantp->parent; /* 如果父节点为红，则grantp一定不为null */
-    parent->color =BLACK;
-    if(grantp->left==parent){
-      uncle=grantp->right;
-    }else{
-      uncle=grantp->left;
+  */
+  rb_node_t *n, *parent ,*grantp,*grantgrantp,*uncle,*tmp_node;
+  n=node;
+  while(n){
+    parent=n->parent;
+    if(!parent){
+      n->color=BLACK;
+      return 0;
     }
-    if(rb_is_black(uncle)){
+    grantp=parent->parent;
+    if(!rb_is_black(parent)){ /* 如果父节点也是红，则需要调整 */
+      grantgrantp=grantp->parent; /* 如果父节点为红，则grantp一定不为null */
+      parent->color =BLACK;
       if(grantp->left==parent){
-        if(parent->left==node){
-                   /***********/
-                   /*       D */
-                   /*    B    */
-                   /* A       */
-                   /***********/
-          parent->color=BLACK;
-          grantp->color=RED;
-          if(grantgrantp){
-            if(grantgrantp->left==grantp){
-              grantgrantp->left=rb_single_right_rotate(grantp);
-            }else{
-                grantgrantp->right=rb_single_right_rotate(grantp);
-            }
-          }else{
-            *root=rb_single_right_rotate(grantp);
-          }
-        }else{                  /* (parent->right==node) */
-                   /***********/
-                   /*       D */
-                   /*    B    */
-                   /*       A */
-                   /***********/
-          parent->color=RED;
-          grantp->color=RED;
-          node->color=BLACK;
-          if(grantgrantp){
-            if(grantgrantp->left==grantp){
-              grantgrantp->left=rb_left_right_rotate(grantp);
-            }else{
-                grantgrantp->right=rb_left_right_rotate(grantp);
-            }
-          }else{
-            *root=rb_left_right_rotate(grantp);
-          }
-        }
-      }else{                    /* (grantp->right==parent) */
-        if(parent->left==node){
-                   /***********/
-                   /*  D      */
-                   /*    B    */
-                   /* A       */
-                   /***********/
-          parent->color=RED;
-          grantp->color=RED;
-          node->color=BLACK;
-          if(grantgrantp){
-            if(grantgrantp->left==grantp){
-              grantgrantp->left=rb_right_left_rotate(grantp);
-            }else{
-                grantgrantp->right=rb_right_left_rotate(grantp);
-            }
-          }else{
-            *root=rb_right_left_rotate(grantp);
-          }
-        }else{                  /* (parent->right==node) */
-                   /***********/
-                   /* D       */
-                   /*    B    */
-                   /*       A */
-                   /***********/
-          parent->color=BLACK;
-          grantp->color=RED;
-          node->color=RED;
-          if(grantgrantp){
-            if(grantgrantp->left==grantp){
-              grantgrantp->left=rb_left_right_rotate(grantp);
-            }else{
-                grantgrantp->right=rb_left_right_rotate(grantp);
-            }
-          }else{
-            *root=rb_left_right_rotate(grantp);
-          }
-        }
-
+        uncle=grantp->right;
+      }else{
+        uncle=grantp->left;
       }
-    }else{                      /* uncle is red */
-      /*  2.1). 如果C为红)，则将C变成黑,然后把祖父D变成红,此时D变成红色，做法与初插入A时的处理方法一样 */
-      /*  ，向上依次检测是否有冲突 */
-      uncle->color=BLACK;
-      grantp->color=RED;
-      rb_node_add_fixup(node->parent->parent,root);
+      if(rb_is_black(uncle)){
+        if(grantp->left==parent){
+          if(parent->left==n){
+            /***********/
+            /*       D */
+            /*    B    */
+            /* A       */
+            /***********/
+            parent->color=BLACK;
+            grantp->color=RED;
+            if(grantgrantp){
+              if(grantgrantp->left==grantp){
+                grantgrantp->left=rb_single_right_rotate(grantp);
+              }else{
+                grantgrantp->right=rb_single_right_rotate(grantp);
+              }
+            }else{
+              *root=rb_single_right_rotate(grantp);
+            }
+          }else{                  /* (parent->right==n) */
+            /***********/
+            /*       D */
+            /*    B    */
+            /*       A */
+            /***********/
+            parent->color=RED;
+            grantp->color=RED;
+            n->color=BLACK;
+            if(grantgrantp){
+              if(grantgrantp->left==grantp){
+                grantgrantp->left=rb_left_right_rotate(grantp);
+              }else{
+                grantgrantp->right=rb_left_right_rotate(grantp);
+              }
+            }else{
+              *root=rb_left_right_rotate(grantp);
+            }
+          }
+        }else{                    /* (grantp->right==parent) */
+          if(parent->left==n){
+            /***********/
+            /*  D      */
+            /*    B    */
+            /* A       */
+            /***********/
+            parent->color=RED;
+            grantp->color=RED;
+            n->color=BLACK;
+            if(grantgrantp){
+              if(grantgrantp->left==grantp){
+                grantgrantp->left=rb_right_left_rotate(grantp);
+              }else{
+                grantgrantp->right=rb_right_left_rotate(grantp);
+              }
+            }else{
+              *root=rb_right_left_rotate(grantp);
+            }
+          }else{                  /* (parent->right==n) */
+            /***********/
+            /* D       */
+            /*    B    */
+            /*       A */
+            /***********/
+            parent->color=BLACK;
+            grantp->color=RED;
+            n->color=RED;
+            if(grantgrantp){
+              if(grantgrantp->left==grantp){
+                grantgrantp->left=rb_left_right_rotate(grantp);
+              }else{
+                grantgrantp->right=rb_left_right_rotate(grantp);
+              }
+            }else{
+              *root=rb_left_right_rotate(grantp);
+            }
+          }
+        }
+        return 0;
+      }else{                      /* uncle is red */
+        /*  2.1). 如果C为红)，则将C变成黑,然后把祖父D变成红,此时D变成红色，做法与初插入A时的处理方法一样 */
+        /*  ，向上依次检测是否有冲突 */
+        uncle->color=BLACK;
+        grantp->color=RED;
+        n=n->parent->parent;
+        /* rb_node_add_fixup(n->parent->parent,root); */
+      }
+    }else{                      /* 父节点是黑，不需要调整 */
+      return 0;
     }
   }
 }
