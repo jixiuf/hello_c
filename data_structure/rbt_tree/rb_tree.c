@@ -404,6 +404,11 @@ void test_add3(){
   assert(rb_is_black(tree.root->right));
   assert(!rb_is_black(tree.root->left->right));
   assert(!rb_is_black(tree.root->left->left));
+  assert(tree.root->left->left->parent ==tree.root->left);
+  assert(tree.root->left->right->parent ==tree.root->left);
+  assert(tree.root->left->parent ==tree.root);
+  assert(tree.root->right->parent ==tree.root);
+  assert(tree.root->parent ==NULL);
 }
 
 int main(int argc, char *argv[]){
