@@ -188,7 +188,7 @@ int rb_node_add_fixup(rb_node_t *node,rb_node_t **root){
     }else{
       uncle=grantp->left;
     }
-    if(uncle->color==BLACK){
+    if(rb_is_black(uncle)){
       if(grantp->left==parent){
         if(parent->left==node){
                    /***********/
@@ -322,8 +322,11 @@ int int_cmp(Item *i1, Item *i2){
   int *i2_int = (int*) i2;
   return (*i1_int - *i2_int);
 }
-
-
+   /*********************************/
+   /*      10b                      */
+   /*    5r      --->      5b       */
+   /* 1r               1r       10r */
+   /*********************************/
 void test_add(){
   rb_tree_t tree;
   rb_init(&tree,int_cmp);
@@ -331,6 +334,13 @@ void test_add(){
   rb_add(&tree,5);
   rb_add(&tree,1);
   assert(3==tree.size);
+
+  assert(5==tree.root->item);
+  assert(1==tree.root->left->item);
+  assert(10==tree.root->right->item);
+  assert(rb_is_black(tree.root));
+  assert(!rb_is_black(tree.root->left));
+  assert(!rb_is_black(tree.root->right));
 }
 int main(int argc, char *argv[]){
   test_add();
