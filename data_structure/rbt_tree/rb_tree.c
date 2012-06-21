@@ -192,7 +192,7 @@ int rb_node_add_fixup(rb_node_t *node,rb_node_t **root){
       }else{
         uncle=grantp->left;
       }
-      if(rb_is_black(uncle)){
+      if(rb_is_black(uncle)){   /* 根据uncle颜色而定，若为黑 ,根据 ABD的位置不同正好对应4种旋转变换，此种情况旋转后变色即可，不需要向上递归*/
         if(grantp->left==parent){
           if(parent->left==n){
             /***********/
