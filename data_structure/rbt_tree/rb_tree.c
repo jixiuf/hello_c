@@ -410,10 +410,116 @@ void test_add3(){
   assert(tree.root->right->parent ==tree.root);
   assert(tree.root->parent ==NULL);
 }
+  /**********************************************/
+  /*      10b             10b                   */
+  /*   5b     20b-->  5r       20b              */
+  /* 1r  8r        1b   8b                      */
+  /*    6r             6r                       */
+  /**********************************************/
+void test_add4(){
+  rb_tree_t tree;
+  rb_init(&tree,int_cmp);
+  rb_add(&tree,20);
+  rb_add(&tree,10);
+  rb_add(&tree,1);
+  rb_add(&tree,5);
+  rb_add(&tree,8);
+  rb_add(&tree,6);
+
+  assert(6==tree.size);
+
+  assert(10==tree.root->item);
+  assert(5==tree.root->left->item);
+  assert(20==tree.root->right->item);
+  assert(1==tree.root->left->left->item);
+  assert(8==tree.root->left->right->item);
+  assert(6==tree.root->left->right->left->item);
+  assert(rb_is_black(tree.root));
+  assert(!rb_is_black(tree.root->left));
+  assert(rb_is_black(tree.root->right));
+  assert(rb_is_black(tree.root->left->right));
+  assert(rb_is_black(tree.root->left->left));
+  assert(!rb_is_black(tree.root->left->right->left));
+  assert(tree.root->left->left->parent ==tree.root->left);
+  assert(tree.root->left->right->parent ==tree.root->left);
+  assert(tree.root->left->parent ==tree.root);
+  assert(tree.root->right->parent ==tree.root);
+  assert(tree.root->parent ==NULL);
+}
+  /**********************************************/
+  /*        10b                  10b            */
+  /*   5r        20b       5r           20b     */
+  /*1b    8b      ----> 1b     7b               */
+  /*   6r                    6r    8r           */
+  /*     7r                                     */
+  /**********************************************/
+void test_add5(){
+  rb_tree_t tree;
+  rb_init(&tree,int_cmp);
+  rb_add(&tree,20);
+  rb_add(&tree,10);
+  rb_add(&tree,1);
+  rb_add(&tree,5);
+  rb_add(&tree,8);
+  rb_add(&tree,6);
+  rb_add(&tree,7);
+
+  assert(7==tree.size);
+
+  assert(10==tree.root->item);
+  assert(5==tree.root->left->item);
+  assert(20==tree.root->right->item);
+  assert(1==tree.root->left->left->item);
+  assert(7==tree.root->left->right->item);
+  assert(6==tree.root->left->right->left->item);
+  assert(8==tree.root->left->right->right->item);
+  assert(rb_is_black(tree.root));
+  assert(!rb_is_black(tree.root->left));
+  assert(rb_is_black(tree.root->right));
+  assert(rb_is_black(tree.root->left->right));
+  assert(rb_is_black(tree.root->left->left));
+  assert(!rb_is_black(tree.root->left->right->left));
+  assert(!rb_is_black(tree.root->left->right->right));
+}
+
+void test_add6(){
+  rb_tree_t tree;
+  rb_init(&tree,int_cmp);
+  rb_add(&tree,20);
+  rb_add(&tree,10);
+  rb_add(&tree,1);
+  rb_add(&tree,5);
+  rb_add(&tree,8);
+  rb_add(&tree,6);
+  rb_add(&tree,7);
+  rb_add(&tree,7);              /* 两次添加7 */
+
+  assert(7==tree.size);
+
+  assert(10==tree.root->item);
+  assert(5==tree.root->left->item);
+  assert(20==tree.root->right->item);
+  assert(1==tree.root->left->left->item);
+  assert(7==tree.root->left->right->item);
+  assert(6==tree.root->left->right->left->item);
+  assert(8==tree.root->left->right->right->item);
+  assert(rb_is_black(tree.root));
+  assert(!rb_is_black(tree.root->left));
+  assert(rb_is_black(tree.root->right));
+  assert(rb_is_black(tree.root->left->right));
+  assert(rb_is_black(tree.root->left->left));
+  assert(!rb_is_black(tree.root->left->right->left));
+  assert(!rb_is_black(tree.root->left->right->right));
+}
+
+
 
 int main(int argc, char *argv[]){
   test_add();
   test_add2();
   test_add3();
+  test_add4();
+  test_add5();
+  test_add6();
   return 0;
 }
