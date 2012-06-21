@@ -179,6 +179,10 @@ int rb_node_add_fixup(rb_node_t *node,rb_node_t **root){
    */
   rb_node_t *parent ,*grantp,*grantgrantp,*uncle,*tmp_node;
   parent=node->parent;
+  if(!parent){
+    node->color=BLACK;
+    return 0;
+  }
   grantp=parent->parent;
   if(!rb_is_black(parent)){ /* 如果父节点也是红，则需要调整 */
     grantgrantp=grantp->parent; /* 如果父节点为红，则grantp一定不为null */
@@ -323,26 +327,54 @@ int int_cmp(Item *i1, Item *i2){
   return (*i1_int - *i2_int);
 }
    /*********************************/
-   /*      10b                      */
-   /*    5r      --->      5b       */
-   /* 1r               1r       10r */
+   /*      20b                      */
+   /*    10r      --->      10b       */
+   /* 1r               1r       20r */
    /*********************************/
 void test_add(){
   rb_tree_t tree;
   rb_init(&tree,int_cmp);
+  rb_add(&tree,20);
   rb_add(&tree,10);
-  rb_add(&tree,5);
   rb_add(&tree,1);
+
   assert(3==tree.size);
 
-  assert(5==tree.root->item);
+  assert(10==tree.root->item);
   assert(1==tree.root->left->item);
-  assert(10==tree.root->right->item);
+  assert(20==tree.root->right->item);
+
   assert(rb_is_black(tree.root));
   assert(!rb_is_black(tree.root->left));
   assert(!rb_is_black(tree.root->right));
 }
+  /**********************************************/
+  /*   10b             10b              10b     */
+  /* 1r    20r --->1r       20r-->   1b     20b */
+  /*                  5r               5r       */
+  /**********************************************/
+void test_add2(){
+  rb_tree_t tree;
+  rb_init(&tree,int_cmp);
+  rb_add(&tree,20);
+  rb_add(&tree,10);
+  rb_add(&tree,1);
+  rb_add(&tree,5);
+
+  assert(4==tree.size);
+
+  assert(10==tree.root->item);
+  assert(1==tree.root->left->item);
+  assert(5==tree.root->left->right->item);
+  assert(20==tree.root->right->item);
+  assert(rb_is_black(tree.root));
+  assert(rb_is_black(tree.root->left));
+  assert(rb_is_black(tree.root->right));
+  assert(!rb_is_black(tree.root->left->right));
+}
+
 int main(int argc, char *argv[]){
   test_add();
+  test_add2();
   return 0;
 }
