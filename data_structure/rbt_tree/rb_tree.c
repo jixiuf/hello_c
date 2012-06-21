@@ -376,6 +376,13 @@ void test_add2(){
   assert(rb_is_black(tree.root->right));
   assert(!rb_is_black(tree.root->left->right));
 }
+  /**********************************************/
+  /*   10b             10b                      */
+  /*1b     20b-->   5b     20b                  */
+  /*  5r          1r 8r                         */
+  /*    8r                                      */
+  /**********************************************/
+
 void test_add3(){
   rb_tree_t tree;
   rb_init(&tree,int_cmp);
@@ -388,13 +395,15 @@ void test_add3(){
   assert(5==tree.size);
 
   assert(10==tree.root->item);
-  assert(1==tree.root->left->item);
-  assert(5==tree.root->left->right->item);
+  assert(5==tree.root->left->item);
   assert(20==tree.root->right->item);
+  assert(1==tree.root->left->left->item);
+  assert(8==tree.root->left->right->item);
   assert(rb_is_black(tree.root));
   assert(rb_is_black(tree.root->left));
   assert(rb_is_black(tree.root->right));
   assert(!rb_is_black(tree.root->left->right));
+  assert(!rb_is_black(tree.root->left->left));
 }
 
 int main(int argc, char *argv[]){
