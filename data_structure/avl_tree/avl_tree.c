@@ -198,6 +198,223 @@ int avl_size(avl_tree_t * avl){
   return avl->size;
 }
 
+int avl_seek(int (*item_cmp)(Item* item1,Item* item2) ,avl_node_t *parent ,Item item,avl_node_t **no,avl_node_t **par){
+  avl_node_t *p,*n;
+  int cmp;
+  if(parent==NULL) return -1;
+  p=NULL;
+  n=parent;
+  while(n!=NULL){
+    cmp=item_cmp(&(n->item),&item);
+    if(cmp==0){                    /* found */
+      *no=n;
+      *par=p;
+      return 0;
+    }else if (cmp<0){
+      p=n;
+      n=n->right;
+    }else{
+      p=n;
+      n=n->left;
+    }
+  }
+  return -1;
+}
+
+int avl_find(avl_tree_t *root,Item item,Item *out){
+  avl_node_t *n;
+  int cmp;
+  if(root->root==NULL) return -1;
+  n=root->root;
+  while(n!=NULL){
+    cmp=root->item_cmp(&(n->item),&item);
+    if(cmp==0){                    /* found */
+      *out=n->item;
+      return 0;
+    }else if (cmp<0){
+      n=n->right;
+    }else{
+      n=n->left;
+    }
+  }
+  return -1;
+}
+int avl_del(avl_tree_t* tree,Item item){
+  int found,lh,rh;
+  avl_node_t *n,*p,*n1,*p1,*tmp;
+  found=avl_seek(tree->item_cmp,tree->root , item,&n,&p);
+  if(-1==found){
+    return -1;                  /* 未找到，无从删起 */
+  }
+  /* if(p==NULL){ */
+  /*   avl_free_node(tree->root); */
+  /*   tree->root=NULL; */
+  /*   tree->size--; */
+  /*   return 0; */
+  /* } */
+  if(n->left==NULL &&n->right==NULL){ /* 无子女 */
+    if(p==NULL){
+      tree->root=NULL;
+    }else if (p->left==n){
+      p->left=NULL;
+      /* lr=avl_node_height(p->right); */
+      /* if(lr==-1){               /\* 若无右节点，则删除左节点，会使树高-1 *\/ */
+
+      /* } */
+    }else if (p->right==n){
+      p->right=NULL;
+    }
+  }else if(n->left==NULL &&n->right!=NULL){ /* 无左子树 */
+    if(p==NULL){
+      tree->root=n->right;
+    }else if (p->left==n){
+      p->left=n->right;
+    }else if (p->right==n){
+      p->right=n->right;
+    }
+  }else if(n->left!=NULL &&n->right==NULL){ /* 无右子树 */
+    if(p==NULL){
+      tree->root=n->left;
+    }else if (p->left==n){
+      p->left=n->left;
+    }else if (p->right==n){
+      p->right=n->left;
+    }
+  }else if(n->left!=NULL &&n->right!=NULL){ /* 有左右子树 */
+    tree_largest(n->left,&n1,&p1);
+    if(p1==NULL){               /* n->left节点 就是左子树中最大的元素,即n->left无右子树 */
+      p1=n;
+    }
+    /* 把n1,从原处移除 */
+    if(p1->left==n1){
+      p1->left=n1->left;
+    }else if(p1->right==n1){
+      p1->right=n1->left;
+    }
+    /* n1->left=NULL; */
+    /* n1->right=NULL; */
+    /* 把n1 移动新位置 */
+    if(p==NULL){
+      tree->root=n1;
+    }else if(p->left==n) {
+      p->left=n1;
+    }else if(p->right==n) {
+      p->left=n1;
+    }
+    n1->left=n->left;
+    n1->right=n->right;
+  }
+  avl_free_node(n);
+  tree->size--;
+  return 0;
+}
+
+/* private 从parent树中寻找最大的node,存到no中，其父节点存到par中，若无父，则par=NULL ,
+   只需一路寻找右节点，直到null即寻到最大值
+ */
+int tree_largest(avl_node_t *parent ,avl_node_t **no,avl_node_t **par){
+  avl_node_t *p,*n;
+  p=NULL;
+  n=parent;
+  if(parent==NULL){
+    *no=NULL;
+    *par=NULL;
+    return -1;
+  }
+  while(n->right!=NULL){
+    p=n;
+    n=n->right;
+  }
+  *no=n;
+  *par=p;
+  return 0;
+}
+
+/* int avl_del_node(avl_node_t *node,Item item,int (*item_cmp)(Item* item1,Item* item2)){ */
+/* } */
+
+
+int int_cmp(Item *i1, Item *i2){
+  int *i1_int = (int*) i1;
+  int *i2_int = (int*) i2;
+  return (*i1_int - *i2_int);
+}
+/*del 6
+           10               10
+       6       20 ->     3      20
+     3       15               15
+ */
+void test_avl_del5(){           /* test no right sub tree */
+  avl_tree_t tree;
+  avl_init(&tree,int_cmp);
+  avl_add(&tree,10);
+  avl_add(&tree,6);
+  avl_add(&tree,20);
+  avl_add(&tree,3);
+  avl_add(&tree,15);
+  assert(0==avl_del(&tree,6));
+  assert(4==avl_size(&tree));
+  assert(10==tree.root->item);
+  assert(20==tree.root->right->item);
+  assert(3==tree.root->left->item);
+}
+
+/*del 6
+           10               10
+       6       20 ->     4      20
+     3   8    15       3   8   15
+   2 4               2
+ */
+void test_avl_del4(){
+  avl_tree_t tree;
+  avl_init(&tree,int_cmp);
+  avl_add(&tree,10);
+  avl_add(&tree,6);
+  avl_add(&tree,20);
+  avl_add(&tree,8);
+  avl_add(&tree,3);
+  avl_add(&tree,15);
+  avl_add(&tree,2);
+  avl_add(&tree,4);
+  assert(0==avl_del(&tree,6));
+  assert(7==avl_size(&tree));
+  assert(10==tree.root->item);
+  assert(20==tree.root->right->item);
+  assert(4==tree.root->left->item);
+  assert(3==tree.root->left->left->item);
+  assert(8==tree.root->left->right->item);
+  assert(2==tree.root->left->left->left->item);
+}
+
+void test_avl_del3(){           /* test del root element */
+  avl_tree_t tree;
+  avl_init(&tree,int_cmp);
+  avl_add(&tree,10);
+  avl_add(&tree,9);
+  avl_add(&tree,11);
+  assert(0==avl_del(&tree,10));
+  assert(2==avl_size(&tree));
+  assert(9==tree.root->item);
+  assert(11==tree.root->right->item);
+}
+
+void test_avl_del2(){           /* test del root element */
+  avl_tree_t tree;
+  avl_init(&tree,int_cmp);
+  avl_add(&tree,10);
+  assert(0==avl_del(&tree,10));
+  assert(0==avl_size(&tree));
+}
+
+void test_avl_del(){
+  avl_tree_t tree;
+  avl_init(&tree,int_cmp);
+  avl_add(&tree,10);
+  assert(-1==avl_del(&tree,100));
+  assert(1==avl_size(&tree));
+}
+
+
 /*
      ##5                 #4#
      #4#    ------>      3#5
@@ -393,12 +610,6 @@ int test_left_right_rotate(){
 
 }
 
-int int_cmp(Item *i1, Item *i2){
-  int *i1_int = (int*) i1;
-  int *i2_int = (int*) i2;
-  return (*i1_int - *i2_int);
-}
-
 /*
      10           5
    5    --->    2  10
@@ -481,7 +692,24 @@ void test_avl_add3(){
   assert(0==tree.root->right->right->height);
 }
 
+void test_avl_find(){
+  Item out;
+  avl_tree_t tree;
+  avl_init(&tree,int_cmp);
+  avl_add(&tree,10);
+  avl_add(&tree,5);
+  avl_add(&tree,2);
+  avl_add(&tree,18);
+  avl_add(&tree,16);
+  avl_add(&tree,8);
 
+  assert(-1 == avl_find(&tree,100,&out));
+
+  assert(0 == avl_find(&tree,5,&out));
+  assert(5 ==out);
+  assert(0 == avl_find(&tree,10,&out));
+  assert(10 ==out);
+}
 
 int main(int argc, char *argv[]){
   test_avl_single_right_rotate();
@@ -491,5 +719,11 @@ int main(int argc, char *argv[]){
   test_avl_add();
   test_avl_add2();
   test_avl_add3();
+  test_avl_find();
+  test_avl_del();
+  test_avl_del2();
+  test_avl_del3();
+  test_avl_del4();
+  test_avl_del5();
   return 0;
 }
