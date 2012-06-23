@@ -15,3 +15,4 @@
 *.la
 *.a
 /data_structure/avl_tree/avl_tree
+/TAGS
