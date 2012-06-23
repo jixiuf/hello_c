@@ -30,7 +30,14 @@ int avl_node_height(avl_node_t* node){
 avl_node_t *avl_single_right_rotate(avl_node_t* a){
   avl_node_t* b=a->left;
   a->left=b->right;
+  if(a->left){
+    a->left->parent=a;
+  }
+
   b->right=a;
+  b->parent=a->parent;
+  a->parent=b;
+
   a->height=1+avl_max_height(avl_node_height(a->right),avl_node_height(a->left));
   b->height=1+avl_max_height(avl_node_height(b->left),avl_node_height(b->right));
   return b;
@@ -45,7 +52,13 @@ avl_node_t *avl_single_right_rotate(avl_node_t* a){
 avl_node_t *avl_single_left_rotate(avl_node_t* a){
   avl_node_t* b=a->right;
   a->right=b->left;
+  if(a->right){
+    a->right->parent=a;
+  }
+
   b->left=a;
+  b->parent=a->parent;
+  a->parent=b;
   a->height =1+avl_max_height(avl_node_height(a->left),avl_node_height(a->right));
   b->height =1+avl_max_height(avl_node_height(b->left),avl_node_height(b->right));
   return b;
@@ -65,6 +78,7 @@ avl_node_t *avl_single_left_rotate(avl_node_t* a){
  */
 avl_node_t *avl_right_left_rotate(avl_node_t* a){
   a->right=avl_single_right_rotate(a->right);
+  a->right->parent=a;
   return avl_single_left_rotate(a);
 }
 
@@ -93,6 +107,7 @@ avl_node_t *avl_right_left_rotate(avl_node_t* a){
 
 avl_node_t *avl_left_right_rotate(avl_node_t* a){
   a->left=avl_single_left_rotate(a->left);
+  a->left->parent=a;
   return avl_single_right_rotate(a);
 }
 /* 注释的这段代码可用，但罗嗦 */
@@ -120,6 +135,7 @@ int avl_make_node(Item item,avl_node_t **node){
   if(n){
     n->left=NULL;
     n->right=NULL;
+    n->parent=NULL;
     n->height=0;
     n->item=item;
     *node=n;
@@ -133,55 +149,56 @@ void avl_free_node(avl_node_t *node){
   free(node);
 }
 
-int avl_node_add(avl_node_t** parent,Item item,int (*item_cmp)(Item* item1,Item* item2)){
-  avl_node_t *new_node;
+int avl_node_add(avl_node_t** parent,avl_node_t *new_node,int (*item_cmp)(Item* item1,Item* item2)){
   int cmp,ret;
-  if(avl_make_node(item,&new_node)!=-1){
-    if(*parent){
-      cmp=item_cmp(&((*parent)->item),&item);
-      if(cmp>0){              /* 插入到左子树中 */
-        ret=avl_node_add(&((*parent)->left),item,item_cmp);
-        if(ret>-1){
-          if(2==avl_node_height((*parent)->left)-avl_node_height((*parent)->right)){ /* 如果左右不平衡 */
-            if(item_cmp(&item,&((*parent)->left->item))>0){ /* >0  ,插入到左子树的右子树中 */
-              *parent=avl_left_right_rotate(*parent);
-            }else{ /* <0的情况 (不会出现==0的情况，==0时不会出现不平衡),插入到左子树的左子树中 */
-              *parent=avl_single_right_rotate(*parent);
-            }
-            /* *parent->height= 1+ avl_max_height() */
+  if(*parent){
+    new_node->parent=*parent;
+    cmp=item_cmp(&((*parent)->item),&(new_node->item));
+    if(cmp>0){              /* 插入到左子树中 */
+      ret=avl_node_add(&((*parent)->left),new_node,item_cmp);
+      if(ret>-1){
+        if(2==avl_node_height((*parent)->left)-avl_node_height((*parent)->right)){ /* 如果左右不平衡 */
+          if(item_cmp(&(new_node->item),&((*parent)->left->item))>0){ /* >0  ,插入到左子树的右子树中 */
+            *parent=avl_left_right_rotate(*parent);
+          }else{ /* <0的情况 (不会出现==0的情况，==0时不会出现不平衡),插入到左子树的左子树中 */
+            *parent=avl_single_right_rotate(*parent);
           }
-        }else{
-          return ret;
+          /* *parent->height= 1+ avl_max_height() */
         }
-      }else if(cmp<0){              /* 插入到右子树中 */
-        ret=avl_node_add(&(*parent)->right,item,item_cmp);
-        if(ret>-1){
-          if(2==avl_node_height((*parent)->right)-avl_node_height((*parent)->left)){ /* 如果左右不平衡 */
-            if(item_cmp(&item,&((*parent)->right->item))>0){ /* >0  ,插入到右子树的右子树中 */
-              *parent=avl_single_right_rotate(*parent);
-            }else{ /* <0的情况 (不会出现==0的情况，==0时不会出现不平衡),插入到右子树的左子树中 */
-              *parent=avl_right_left_rotate(*parent);
-            }
-          }
-        }else{
-          return ret;
-        }
-
-      }else{                  /* 暂不支持重复元素 */
-        avl_free_node(new_node);
-        return -1;
+      }else{
+        return ret;
       }
-    }else{
-      *parent=new_node;
+    }else if(cmp<0){              /* 插入到右子树中 */
+      ret=avl_node_add(&(*parent)->right,new_node,item_cmp);
+      if(ret>-1){
+        if(2==avl_node_height((*parent)->right)-avl_node_height((*parent)->left)){ /* 如果左右不平衡 */
+          if(item_cmp(&(new_node->item),&((*parent)->right->item))>0){ /* >0  ,插入到右子树的右子树中 */
+            *parent=avl_single_right_rotate(*parent);
+          }else{ /* <0的情况 (不会出现==0的情况，==0时不会出现不平衡),插入到右子树的左子树中 */
+            *parent=avl_right_left_rotate(*parent);
+          }
+        }
+      }else{
+        return ret;
+      }
+
+    }else{                  /* 暂不支持重复元素 */
+      avl_free_node(new_node);
+      return -1;
     }
-    (*parent)->height= 1+ avl_max_height(avl_node_height((*parent)->left),avl_node_height((*parent)->right));
-    return 0;
   }else{
-    return -1;
+    *parent=new_node;
   }
+  (*parent)->height= 1+ avl_max_height(avl_node_height((*parent)->left),avl_node_height((*parent)->right));
+  return 0;
 }
 int avl_add(avl_tree_t* avl,Item item){
-  int ret=avl_node_add(&(avl->root),item,avl->item_cmp);
+  int ret;
+  avl_node_t *new_node;
+  if(avl_make_node(item,&new_node)==-1){
+    return -1;
+  }
+  ret=avl_node_add(&(avl->root),new_node,avl->item_cmp);
   if(ret!= -1){
     avl->size++;
   }
@@ -198,23 +215,19 @@ int avl_size(avl_tree_t * avl){
   return avl->size;
 }
 
-int avl_seek(int (*item_cmp)(Item* item1,Item* item2) ,avl_node_t *parent ,Item item,avl_node_t **no,avl_node_t **par){
-  avl_node_t *p,*n;
+int avl_seek(int (*item_cmp)(Item* item1,Item* item2) ,avl_node_t *parent ,Item item,avl_node_t **no){
+  avl_node_t *n;
   int cmp;
   if(parent==NULL) return -1;
-  p=NULL;
   n=parent;
   while(n!=NULL){
     cmp=item_cmp(&(n->item),&item);
     if(cmp==0){                    /* found */
       *no=n;
-      *par=p;
       return 0;
     }else if (cmp<0){
-      p=n;
       n=n->right;
     }else{
-      p=n;
       n=n->left;
     }
   }
@@ -223,26 +236,17 @@ int avl_seek(int (*item_cmp)(Item* item1,Item* item2) ,avl_node_t *parent ,Item 
 
 int avl_find(avl_tree_t *root,Item item,Item *out){
   avl_node_t *n;
-  int cmp;
-  if(root->root==NULL) return -1;
-  n=root->root;
-  while(n!=NULL){
-    cmp=root->item_cmp(&(n->item),&item);
-    if(cmp==0){                    /* found */
-      *out=n->item;
-      return 0;
-    }else if (cmp<0){
-      n=n->right;
-    }else{
-      n=n->left;
-    }
+  int ret;
+  ret=avl_seek(root->item_cmp,root->root,item,&n);
+  if (0==ret){
+    *out=n->item;
   }
-  return -1;
+  return ret;
 }
 int avl_del(avl_tree_t* tree,Item item){
   int found,lh,rh;
-  avl_node_t *n,*p,*n1,*p1,*tmp;
-  found=avl_seek(tree->item_cmp,tree->root , item,&n,&p);
+  avl_node_t *n,*n1,*tmp;
+  found=avl_seek(tree->item_cmp,tree->root , item,&n);
   if(-1==found){
     return -1;                  /* 未找到，无从删起 */
   }
@@ -253,80 +257,85 @@ int avl_del(avl_tree_t* tree,Item item){
   /*   return 0; */
   /* } */
   if(n->left==NULL &&n->right==NULL){ /* 无子女 */
-    if(p==NULL){
+    if(n->parent==NULL){
       tree->root=NULL;
-    }else if (p->left==n){
-      p->left=NULL;
+    }else if (n->parent->left==n){
+      n->parent->left=NULL;
       /* lr=avl_node_height(p->right); */
       /* if(lr==-1){               /\* 若无右节点，则删除左节点，会使树高-1 *\/ */
 
       /* } */
-    }else if (p->right==n){
-      p->right=NULL;
+    }else if (n->parent->right==n){
+      n->parent->right=NULL;
     }
   }else if(n->left==NULL &&n->right!=NULL){ /* 无左子树 */
-    if(p==NULL){
+    if(n->parent==NULL){
       tree->root=n->right;
-    }else if (p->left==n){
-      p->left=n->right;
-    }else if (p->right==n){
-      p->right=n->right;
+    }else if (n->parent->left==n){
+      n->parent->left=n->right;
+    }else if (n->parent->right==n){
+      n->parent->right=n->right;
     }
+    n->right->parent=n->parent;
   }else if(n->left!=NULL &&n->right==NULL){ /* 无右子树 */
-    if(p==NULL){
+    if(n->parent==NULL){
       tree->root=n->left;
-    }else if (p->left==n){
-      p->left=n->left;
-    }else if (p->right==n){
-      p->right=n->left;
+    }else if (n->parent->left==n){
+      n->parent->left=n->left;
+    }else if (n->parent->right==n){
+      n->parent->right=n->left;
     }
+    n->left->parent=n->parent;
   }else if(n->left!=NULL &&n->right!=NULL){ /* 有左右子树 */
-    tree_largest(n->left,&n1,&p1);
-    if(p1==NULL){               /* n->left节点 就是左子树中最大的元素,即n->left无右子树 */
-      p1=n;
-    }
+    tree_largest(n->left,&n1);
+    /* if(n1->parent==n){               /\* n->left节点 就是左子树中最大的元素,即n->left无右子树 *\/ */
+    /*   n1->parent=n; */
+    /* } */
     /* 把n1,从原处移除 */
-    if(p1->left==n1){
-      p1->left=n1->left;
-    }else if(p1->right==n1){
-      p1->right=n1->left;
+    if(n1->parent->left==n1){
+      n1->parent->left=n1->left;
+    }else if(n1->parent->right==n1){
+      n1->parent->right=n1->left;
     }
+    if(n1->left)
+      n1->left->parent=n1->parent;
     /* n1->left=NULL; */
     /* n1->right=NULL; */
     /* 把n1 移动新位置 */
-    if(p==NULL){
+    if(n->parent==NULL){
       tree->root=n1;
-    }else if(p->left==n) {
-      p->left=n1;
-    }else if(p->right==n) {
-      p->left=n1;
+    }else if(n->parent->left==n) {
+      n->parent->left=n1;
+    }else if(n->parent->right==n) {
+      n->parent->left=n1;
     }
+    n1->parent=n->parent;
     n1->left=n->left;
     n1->right=n->right;
+    if(n1->right)
+      n1->right->parent=n1;
+    if(n1->left)
+      n1->left->parent=n1;
   }
   avl_free_node(n);
   tree->size--;
   return 0;
 }
 
-/* private 从parent树中寻找最大的node,存到no中，其父节点存到par中，若无父，则par=NULL ,
+/* private 从parent树中寻找最大的node,存到no
    只需一路寻找右节点，直到null即寻到最大值
  */
-int tree_largest(avl_node_t *parent ,avl_node_t **no,avl_node_t **par){
-  avl_node_t *p,*n;
-  p=NULL;
+int tree_largest(avl_node_t *parent ,avl_node_t **no){
+  avl_node_t*n;
   n=parent;
   if(parent==NULL){
     *no=NULL;
-    *par=NULL;
     return -1;
   }
   while(n->right!=NULL){
-    p=n;
     n=n->right;
   }
   *no=n;
-  *par=p;
   return 0;
 }
 
@@ -352,6 +361,11 @@ void test_avl_del5(){           /* test no right sub tree */
   avl_add(&tree,20);
   avl_add(&tree,3);
   avl_add(&tree,15);
+  assert(tree.root->parent==NULL);
+  assert(tree.root->left->parent==tree.root);
+  assert(tree.root->right->parent==tree.root);
+  assert(tree.root->right->left->parent==tree.root->right);
+
   assert(0==avl_del(&tree,6));
   assert(4==avl_size(&tree));
   assert(10==tree.root->item);
@@ -376,6 +390,15 @@ void test_avl_del4(){
   avl_add(&tree,15);
   avl_add(&tree,2);
   avl_add(&tree,4);
+
+  assert(tree.root->parent==NULL);
+  assert(tree.root->left->parent==tree.root);
+  assert(tree.root->right->parent==tree.root);
+  assert(tree.root->right->left->parent==tree.root->right);
+  assert(tree.root->left->left->parent==tree.root->left);
+  assert(tree.root->left->right->parent==tree.root->left);
+  assert(tree.root->left->left->left->parent==tree.root->left->left);
+
   assert(0==avl_del(&tree,6));
   assert(7==avl_size(&tree));
   assert(10==tree.root->item);
@@ -396,6 +419,8 @@ void test_avl_del3(){           /* test del root element */
   assert(2==avl_size(&tree));
   assert(9==tree.root->item);
   assert(11==tree.root->right->item);
+  assert(tree.root->parent==NULL);
+  assert(tree.root->right->parent==tree.root);
 }
 
 void test_avl_del2(){           /* test del root element */
@@ -429,14 +454,18 @@ int test_avl_single_right_rotate(){
   a.height=2;
   a.left=&b;
   a.right=NULL;
+  a.parent=NULL;
 
   b.height=1;
   b.left=&c;
   b.right=NULL;
+  b.parent=&a;
 
   c.height=0;
   c.right=NULL;
   c.left=NULL;
+  c.parent=&b;
+
   result= avl_single_right_rotate(&a);
 
   assert(4==result->item);
@@ -445,6 +474,9 @@ int test_avl_single_right_rotate(){
   assert(0==a.height);
   assert(1==b.height);
   assert(0==c.height);
+  assert(a.parent==&b);
+  assert(b.parent==NULL);
+  assert(c.parent==&b);
   printf ("test_avl_single_right_rotate:");
   printf ("%d,%d,%d\n",result->item,result->left->item,result->right->item);
 }
@@ -463,14 +495,17 @@ int test_avl_single_left_rotate(){
   a.height=2;
   a.right=&b;
   a.left=NULL;
+  a.parent=NULL;
 
   b.height=1;
   b.right=&c;
   b.left=NULL;
+  b.parent=&a;
 
   c.height=0;
   c.right=NULL;
   c.left=NULL;
+  c.parent=&b;
   result= avl_single_left_rotate(&a);
   printf ("test_avl_single_left_rotate:");
   assert(2==result->item);
@@ -479,6 +514,10 @@ int test_avl_single_left_rotate(){
   assert(1==result->height);
   assert(0==result->left->height);
   assert(0==result->right->height);
+  assert(a.parent==&b);
+  assert(b.parent==NULL);
+  assert(c.parent==&b);
+
   printf ("%d,%d,%d\n",result->item,result->left->item,result->right->item);
 
   return 0;
@@ -506,25 +545,30 @@ int test_right_left_rotate(){
   a.height=3;
   a.right=&b;
   a.left=NULL;
+  a.parent=NULL;
 
   b.height=2;
   b.left=&c;
   b.right=NULL;
+  b.parent=&a;
 
 
   cr.item=9;
   cr.height=0;
   cr.left=NULL;
   cr.right=NULL;
+  cr.parent=&c;
 
   cl.item=6;
   cl.height=0;
   cl.left=NULL;
   cl.right=NULL;
+  cl.parent=&c;
 
   c.height=1;
   c.right=&cr;
   c.left=&cl;
+  c.parent=&b;
 
   result= avl_right_left_rotate(&a);
   printf ("test_right_left_rotate:");
@@ -541,6 +585,11 @@ int test_right_left_rotate(){
   assert(1==b.height);
   assert(2==c.height);
 
+  assert(c.parent==NULL);
+  assert(a.parent==&c);
+  assert(b.parent==&c);
+  assert(cr.parent==&b);
+  assert(cl.parent==&a);
 
   printf ("%d,%d,%d,%d,%d\n",
           result->item,
@@ -563,6 +612,9 @@ int test_right_left_rotate(){
     8           5        9          6 8
    6 9            6
  */
+
+
+
 int test_left_right_rotate(){
   avl_node_t a,b,c,*result,cr,cl;
   a.item=10;
@@ -572,25 +624,30 @@ int test_left_right_rotate(){
   a.left=&b;
   a.right=NULL;
   a.height=3;
+  a.parent=NULL;
 
 
   b.right=&c;
   b.left=NULL;
   b.height=2;
+  b.parent=&a;
 
   cr.item=9;
   cr.left=NULL;
   cr.right=NULL;
   cr.height=0;
+  cr.parent=&c;
 
   cl.item=6;
   cl.left=NULL;
   cl.right=NULL;
   cl.height=0;
+  cl.parent=&c;
 
   c.height=1;
   c.right=&cr;
   c.left=&cl;
+  c.parent=&b;
 
   result= avl_left_right_rotate(&a);
   assert(0==cr.height);
@@ -598,6 +655,12 @@ int test_left_right_rotate(){
   assert(1==a.height);
   assert(1==b.height);
   assert(2==c.height);
+
+  assert(c.parent==NULL);
+  assert(a.parent==&c);
+  assert(b.parent==&c);
+  assert(cr.parent==&a);
+  assert(cl.parent==&b);
 
   printf ("test_left_right_rotate:%d,%d,%d,%d,%d\n",
           result->item,
@@ -632,6 +695,11 @@ void test_avl_add(){
   assert(0==tree.root->left->height);
   assert(1==tree.root->right->height);
   assert(0==tree.root->right->right->height);
+
+  assert(tree.root->parent==NULL);
+  assert(tree.root->left->parent==tree.root);
+  assert(tree.root->right->parent==tree.root);
+  assert(tree.root->right->right->parent==tree.root->right);
 }
 /*
      10           5                    5
@@ -647,6 +715,12 @@ void test_avl_add2(){
   avl_add(&tree,2);
   avl_add(&tree,18);
   avl_add(&tree,16);
+  assert(tree.root->parent==NULL);
+  assert(tree.root->left->parent==tree.root);
+  assert(tree.root->right->parent==tree.root);
+  assert(tree.root->right->left->parent==tree.root->right);
+  assert(tree.root->right->right->parent==tree.root->right);
+
   assert(5==tree.root->item);
   assert(2==tree.root->left->item);
   assert(16==tree.root->right->item);
@@ -676,6 +750,13 @@ void test_avl_add3(){
   avl_add(&tree,18);
   avl_add(&tree,16);
   avl_add(&tree,8);
+  assert(tree.root->parent==NULL);
+  assert(tree.root->left->parent==tree.root);
+  assert(tree.root->right->parent==tree.root);
+  assert(tree.root->left->left->parent==tree.root->left);
+  assert(tree.root->left->right->parent==tree.root->left);
+  assert(tree.root->right->right->parent==tree.root->right);
+
   assert(10==tree.root->item);
   assert(5==tree.root->left->item);
   assert(16==tree.root->right->item);

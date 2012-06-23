@@ -7,6 +7,7 @@ struct avl_node {
   Item item;
   struct avl_node * left;
   struct avl_node * right;
+  struct avl_node * parent;
   int height;
 };
 
