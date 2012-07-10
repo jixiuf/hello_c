@@ -338,14 +338,50 @@ int rb_add(rb_tree_t* tree,Item item){
 
  */
 int rb_del(rb_tree_t * tree,Item item){
+rb_node_t* n;
+ if(-1==rb_seek(tree->item_cmp,tree->root,item,*n)){
+   return -1;
+ }
 }
+int rb_seek(int (*item_cmp)(Item* item1,Item* item2) ,rb_node_t *parent ,Item item,rb_node_t **no){
+  rb_node_t *n;
+  int cmp;
+  if(parent==NULL) return -1;
+  n=parent;
+  while(n!=NULL){
+    cmp=item_cmp(&(n->item),&item);
+    if(cmp==0){                    /* found */
+      *no=n;
+      return 0;
+    }else if (cmp<0){
+      n=n->right;
+    }else{
+      n=n->left;
+    }
+  }
+  return -1;
+}
+
 /* test */
 int int_cmp(Item *i1, Item *i2){
   int *i1_int = (int*) i1;
   int *i2_int = (int*) i2;
   return (*i1_int - *i2_int);
 }
-   /*********************************/
+void test_del1(){               /* 删除不存在的元素 */
+  rb_tree_t tree;
+  rb_init(&tree,int_cmp);
+  assert(-1==rb_del(&tree,1));
+}
+void test_del2(){               /* 删除不存在的元素 */
+  rb_tree_t tree;
+  rb_init(&tree,int_cmp);
+  rb_add(&tree,2);
+  rb_add(&tree,3);
+  assert(-1==rb_del(&tree,1));
+}
+
+/*********************************/
    /*      20b                      */
    /*    10r      --->      10b       */
    /* 1r               1r       20r */
@@ -536,5 +572,7 @@ int main(int argc, char *argv[]){
   test_add4();
   test_add5();
   test_add6();
+  test_del1();
+  test_del2();
   return 0;
 }
