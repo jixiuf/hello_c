@@ -360,12 +360,12 @@ int rb_del(rb_tree_t * tree,Item item){
             /* 进行左旋start............... */
             if(n->parent->parent){
               if(n->parent->parent->left==n->parent){
-                n->parent->parent->left=rb_single_left_rotate(n->parent->right);
+                n->parent->parent->left=rb_single_left_rotate(n->parent);
               }else{
-                n->parent->parent->right=rb_single_left_rotate(n->parent->right);
+                n->parent->parent->right=rb_single_left_rotate(n->parent);
               }
             }else{
-              tree->root=rb_single_left_rotate(n->parent->right);
+              tree->root=rb_single_left_rotate(n->parent);
             }
             /* 进行左旋end............... */
           }
@@ -385,12 +385,12 @@ int rb_del(rb_tree_t * tree,Item item){
             /* 进行左旋start............... */
             if(n->parent->parent){
               if(n->parent->parent->left==n->parent){
-                n->parent->parent->left=rb_single_right_rotate(n->parent->left);
+                n->parent->parent->left=rb_single_right_rotate(n->parent);
               }else{
-                n->parent->parent->right=rb_single_right_rotate(n->parent->left);
+                n->parent->parent->right=rb_single_right_rotate(n->parent);
               }
             }else{
-              tree->root=rb_single_right_rotate(n->parent->left);
+              tree->root=rb_single_right_rotate(n->parent);
             }
             /* 进行左旋end............... */
           }
