@@ -448,23 +448,49 @@ void test_del2(){               /* 删除不存在的元素 */
   assert(-1==rb_del(&tree,1));
 }
 /**********************************************************************************/
-/*      10p(B)           del n          s(B)                                        */
-/* 5n(B)     8s(R)       ---->   p(R)        sr(B)                                  */
-/*       7sl(B)  9sr(B)            sl(B)                                            */
+/*      10(B)           del 5              20(B)                     */
+/* 5(B)     20(R)       ---->          10(R)      30(B)                   */
+/*       15(B)  30(B)                    15(B)                       */
+/*            16(R)        )               16(R)                            */
 /*       删掉n之后,p的右子树比左子树的黑节点要多， 所以需要进行调色旋转以达到平衡              */
 /*       处理办法是：p由黑变红，s由红变黑，然后进行一次左旋                                */
 /**********************************************************************************/
-/* 删除n,且兄弟为红的情况 */
+/* 删除n,5,且兄弟s 20为红的情况 */
 void test_del3(){               /* 删除不存在的元素 */
   rb_tree_t tree;
   rb_init(&tree,int_cmp);
   rb_add(&tree,10);
   rb_add(&tree,5);
-  rb_add(&tree,8);
-  rb_add(&tree,7);
-  rb_add(&tree,9);
+  rb_add(&tree,20);
+  rb_add(&tree,15);
+  rb_add(&tree,30);
+  rb_add(&tree,16);
+  assert(tree.root->item==10);
+  assert(tree.root->left->item==5);
+  assert(tree.root->right->item==20);
+  assert(tree.root->right->left->item==15);
+  assert(tree.root->right->right->item==30);
+  assert(tree.root->right->left->right->item==16);
   assert(tree.root->color==BLACK);
+  assert(tree.root->left->color==BLACK);
+  assert(tree.root->right->color==RED);
+  assert(tree.root->right->left->color==BLACK);
+  assert(tree.root->right->right->color==BLACK);
+  assert(tree.root->right->left->right->color==RED);
+  /* 以上确保删除5之前的结构如注释中图所示 */
   assert(0==rb_del(&tree,5));
+
+  assert(tree.root->item==20);
+  assert(tree.root->color==BLACK);
+  assert(tree.root->left->item==10);
+  assert(tree.root->left->color==RED);
+  assert(tree.root->right->item==30);
+  assert(tree.root->right->color==BLACK);
+  assert(tree.root->left->right->item==15);
+  assert(tree.root->left->right->color==BLACK);
+  assert(tree.root->left->right->right->item==16);
+  assert(tree.root->left->right->right->color==RED);
+
 }
 
 
