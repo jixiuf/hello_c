@@ -338,10 +338,79 @@ int rb_add(rb_tree_t* tree,Item item){
 
  */
 int rb_del(rb_tree_t * tree,Item item){
-rb_node_t* n;
- if(-1==rb_seek(tree->item_cmp,tree->root,item,*n)){
-   return -1;
- }
+  rb_node_t* n,*tmp;
+  if(-1==rb_seek(tree->item_cmp,tree->root,item,*n)){
+    return -1;
+  }
+  /* n为 待删除的节点 */
+  if(n->left==NULL&&n->right==NULL){ /* 无子节点 */
+    if(n->parent){                 /* n有父，即n不是根节点 */
+      if(rb_is_black(n)){          /* n为黑 */
+        if(n->parent->left==n){
+          if(rb_is_black(n->parent->right)){ /* n的兄弟节点为黑 */
+
+          }else{                /* n的兄弟节点为红,则推出n的父必为黑 */
+            /**********************************************************************************/
+            /*      p(B)           del n          s(B)                                        */
+            /* n(B)     s(R)       ---->   p(R)        sr(B)                                  */
+            /*       sl(B)  sr(B)            sl(B)                                            */
+            /*       删掉n之后,p的右子树比左子树的黑节点要多， 所以需要进行调色旋转以达到平衡              */
+            /*       处理办法是：p由黑变红，s由红变黑，然后进行一次左旋                                */
+            /**********************************************************************************/
+            n->parent->color=RED;
+            n->parent->right->color=BLACK;
+            /* 进行左旋start............... */
+            if(n->parent->parent){
+              if(n->parent->parent->left==n->parent){
+                n->parent->parent->left=rb_single_left_rotate(n->parent->right);
+              }else{
+                n->parent->parent->right=rb_single_left_rotate(n->parent->right);
+              }
+            }else{
+              tree->root=rb_single_left_rotate(n->parent->right);
+            }
+            /* 进行左旋end............... */
+          }
+        }else{                               /* n->parent->right==n */
+          if(rb_is_black(n->parent->right)){ /* n的兄弟节点为黑 */
+
+          }else{                /* n的兄弟节点为红,则推出n的父必为黑 */
+            /*********************************************************************************/
+            /*        p(B)           del n            s(B)                                   */
+            /*   s(R)       n(B)     ---->       sl(B)       p(R)                            */
+            /*sl(B)  sr(B)                               sr(B)                               */
+            /*       删掉n之后,p的左子树比右子树的黑节点要多， 所以需要进行调色旋转以达到平衡              */
+            /*       处理办法是：p由黑变红，s由红变黑，然后进行一次右旋                                */
+            /**********************************************************************************/
+            n->parent->color=RED;
+            n->parent->right->color=BLACK;
+            /* 进行左旋start............... */
+            if(n->parent->parent){
+              if(n->parent->parent->left==n->parent){
+                n->parent->parent->left=rb_single_right_rotate(n->parent->left);
+              }else{
+                n->parent->parent->right=rb_single_right_rotate(n->parent->left);
+              }
+            }else{
+              tree->root=rb_single_right_rotate(n->parent->left);
+            }
+            /* 进行左旋end............... */
+          }
+        }
+
+      }else{                    /* n为红色 ,直接将n删除即可*/
+        if(n->parent->left==n){
+          n->parent->left=NULL;
+        }else{
+          n->parent->right=NULL;
+        }
+      }
+    }else{                      /* n为根节点 */
+      tree->root=NULL;
+    }
+  }
+  tree->size--;
+  return 0;
 }
 int rb_seek(int (*item_cmp)(Item* item1,Item* item2) ,rb_node_t *parent ,Item item,rb_node_t **no){
   rb_node_t *n;
@@ -380,12 +449,32 @@ void test_del2(){               /* 删除不存在的元素 */
   rb_add(&tree,3);
   assert(-1==rb_del(&tree,1));
 }
+/**********************************************************************************/
+/*      10p(B)           del n          s(B)                                        */
+/* 5n(B)     8s(R)       ---->   p(R)        sr(B)                                  */
+/*       7sl(B)  9sr(B)            sl(B)                                            */
+/*       删掉n之后,p的右子树比左子树的黑节点要多， 所以需要进行调色旋转以达到平衡              */
+/*       处理办法是：p由黑变红，s由红变黑，然后进行一次左旋                                */
+/**********************************************************************************/
+/* 删除n,且兄弟为红的情况 */
+void test_del3(){               /* 删除不存在的元素 */
+  rb_tree_t tree;
+  rb_init(&tree,int_cmp);
+  rb_add(&tree,10);
+  rb_add(&tree,5);
+  rb_add(&tree,8);
+  rb_add(&tree,7);
+  rb_add(&tree,9);
+  assert(tree.root->color==BLACK);
+  assert(0==rb_del(&tree,5));
+}
+
 
 /*********************************/
-   /*      20b                      */
-   /*    10r      --->      10b       */
-   /* 1r               1r       20r */
-   /*********************************/
+/*      20b                      */
+/*    10r      --->      10b       */
+/* 1r               1r       20r */
+/*********************************/
 void test_add(){
   rb_tree_t tree;
   rb_init(&tree,int_cmp);
@@ -574,5 +663,6 @@ int main(int argc, char *argv[]){
   test_add6();
   test_del1();
   test_del2();
+  test_del3();
   return 0;
 }
