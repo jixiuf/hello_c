@@ -339,9 +339,7 @@ int rb_add(rb_tree_t* tree,Item item){
  */
 int rb_del(rb_tree_t * tree,Item item){
   rb_node_t* n,*tmp;
-  if(-1==rb_seek(tree->item_cmp,tree->root,item,*n)){
-    return -1;
-  }
+  if(-1==rb_seek(tree->item_cmp,tree->root,item,&n))    return -1;
   /* n为 待删除的节点 */
   if(n->left==NULL&&n->right==NULL){ /* 无子节点 */
     if(n->parent){                 /* n有父，即n不是根节点 */
