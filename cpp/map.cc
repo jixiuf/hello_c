@@ -15,6 +15,12 @@ int main(int argc, char *argv[]){
   int cnt = m.count("k1");      // 存不存在
   cout <<"exits? "<<cnt<<endl;
   map<string,int>::iterator it = m.find("k1");
-  cout<<"key="<<it->first<<",value="<<it->second<<endl;
+  if (it!=m.end())
+    cout<<"key="<<it->first<<",value="<<it->second<<endl;
+
+  m.erase("k1");                // return void
+  cnt = m.count("k1");      // 存不存在
+  cout <<"exits? "<<cnt<<endl;
+
   return 0;
 }
