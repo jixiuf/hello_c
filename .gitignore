@@ -22,3 +22,9 @@
 /util/arg
 /util/arg_quote
 *.exe
+/opencv/Debug/*
+/opencv/opencv_demo.vcxproj.user
+/opencv/ClassDiagram1.cd
+/opencv/ClassDiagram2.cd
+/opencv/opencv_demo.vcxproj
+/opencv/opencv_demo.vcxproj.filters

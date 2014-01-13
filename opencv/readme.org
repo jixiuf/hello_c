@@ -1,0 +1,2 @@
+* hello opencv  Computer Visivion
+mklink /d    "d:\Documents\Visual Studio 2010\Projects\opencv_demo\opencv_demo" d:\hello_c\opencv
