@@ -8,6 +8,7 @@
 #include <stdlib.h>
 // using namespace std;
 // 主要实现 在摄像头前移动一个圆形物体，此程序 能够追踪此物体的轨迹
+// 这里 使用了opencv1 的函数，
 int main(int argc, char *argv[]){
   // 可能需要把摄像头的像素也调成这个大小
   CvSize size640x480=cvSize(640,480);
@@ -50,10 +51,10 @@ int main(int argc, char *argv[]){
              9,9);             // smooth filter window width and height
 
     // fill pSeqCircles with all circle in processed image
-    // 从处理过的图片过 过滤出所有的贺， 然后填充到 pSeqCircles
+    // 从处理过的图片过 过滤出所有的圆， 然后填充到 pSeqCircles
     pSeqCircles=cvHoughCircles(pImgProcessed, // input, , has to be grayscale (no color)
                                pMemStorage,    // provide this function with mem storage
-                               CV_HOUGH_GRADIENT, // two-pass algorithm for detecting the circles ,从图片中检测是不是贺的算法，目前只支持这一种算法，
+                               CV_HOUGH_GRADIENT, // two-pass algorithm for detecting the circles ,从图片中检测是不是圆的算法，目前只支持这一种算法，
                                2,                 // size of image /2 = accumulator resolution, i.e. acc=res=size of image/2
                                pImgProcessed->height/4, // min distance in pixel between the centors of the detected circles
                                100,                     // hight threshold(界限) of canny(精确的) edeg  detector ,called by cvHoughCircles
@@ -64,7 +65,7 @@ int main(int argc, char *argv[]){
     for (i = 0; i < pSeqCircles->total; i++){ // 对于每个检测到的circle
       pXYRadius=(float*)cvGetSeqElem(pSeqCircles, i);
       printf ("x=%f,y=%f,r=%f\n",pXYRadius[0],pXYRadius[1],pXYRadius[2]); // x, y ,r
-      // draw a small green circle 在检测的的贺 内部画一个小圆
+      // draw a small green circle 在检测的的圆 内部画一个小圆
       cvCircle(pImgOrig,
                cvPoint(pXYRadius[0],pXYRadius[1]), // x y  point
                3, //3 pixel,  or   pXYRadius[2],                       // r 半径,
