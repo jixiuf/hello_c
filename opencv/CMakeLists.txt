@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 2.8)
+project( opencv_demo )
+find_package( OpenCV REQUIRED )
+add_executable( Demo01LoadImg Demo01LoadImg.cpp )
+add_executable( Demo02ImgRGBInRangeFilter Demo02ImgRGBInRangeFilter.cpp )
+target_link_libraries( Demo01LoadImg ${OpenCV_LIBS} )
+target_link_libraries( Demo02ImgRGBInRangeFilter ${OpenCV_LIBS} )

@@ -33,3 +33,5 @@
 /opencv/Makefile
 /opencv/CMakeCache.txt
 /opencv/opencv_demo
+/opencv/Demo01LoadImg
+/opencv/Demo02ImgRGBInRangeFilter
