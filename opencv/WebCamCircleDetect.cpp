@@ -1,4 +1,4 @@
-//  -*- coding:gbk -*-
+//  -*- coding:utf-8-dos -*-
 // #include <iostream>
 #include <opencv/cxcore.h>
 #include <opencv/cvaux.h>
@@ -7,10 +7,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 // using namespace std;
-// Ö÷ÒªÊµÏÖ ÔÚÉãÏñÍ·Ç°ÒÆ¶¯Ò»¸öÔ²ĞÎÎïÌå£¬´Ë³ÌĞò ÄÜ¹»×·×Ù´ËÎïÌåµÄ¹ì¼£
-// ÕâÀï Ê¹ÓÃÁËopencv1 µÄº¯Êı£¬
+// ä¸»è¦å®ç° åœ¨æ‘„åƒå¤´å‰ç§»åŠ¨ä¸€ä¸ªåœ†å½¢ç‰©ä½“ï¼Œæ­¤ç¨‹åº èƒ½å¤Ÿè¿½è¸ªæ­¤ç‰©ä½“çš„è½¨è¿¹
+// è¿™é‡Œ ä½¿ç”¨äº†opencv1 çš„å‡½æ•°ï¼Œ
 int main(int argc, char *argv[]){
-  // ¿ÉÄÜĞèÒª°ÑÉãÏñÍ·µÄÏñËØÒ²µ÷³ÉÕâ¸ö´óĞ¡
+  // å¯èƒ½éœ€è¦æŠŠæ‘„åƒå¤´çš„åƒç´ ä¹Ÿè°ƒæˆè¿™ä¸ªå¤§å°
   CvSize size640x480=cvSize(640,480);
   CvCapture *pCapture;
   IplImage *pImgOrig, *pImgProcessed;
@@ -51,33 +51,33 @@ int main(int argc, char *argv[]){
              9,9);             // smooth filter window width and height
 
     // fill pSeqCircles with all circle in processed image
-    // ´Ó´¦Àí¹ıµÄÍ¼Æ¬¹ı ¹ıÂË³öËùÓĞµÄÔ²£¬ È»ºóÌî³äµ½ pSeqCircles
+    // ä»å¤„ç†è¿‡çš„å›¾ç‰‡è¿‡ è¿‡æ»¤å‡ºæ‰€æœ‰çš„åœ†ï¼Œ ç„¶åå¡«å……åˆ° pSeqCircles
     pSeqCircles=cvHoughCircles(pImgProcessed, // input, , has to be grayscale (no color)
                                pMemStorage,    // provide this function with mem storage
-                               CV_HOUGH_GRADIENT, // two-pass algorithm for detecting the circles ,´ÓÍ¼Æ¬ÖĞ¼ì²âÊÇ²»ÊÇÔ²µÄËã·¨£¬Ä¿Ç°Ö»Ö§³ÖÕâÒ»ÖÖËã·¨£¬
+                               CV_HOUGH_GRADIENT, // two-pass algorithm for detecting the circles ,ä»å›¾ç‰‡ä¸­æ£€æµ‹æ˜¯ä¸æ˜¯åœ†çš„ç®—æ³•ï¼Œç›®å‰åªæ”¯æŒè¿™ä¸€ç§ç®—æ³•ï¼Œ
                                2,                 // size of image /2 = accumulator resolution, i.e. acc=res=size of image/2
                                pImgProcessed->height/4, // min distance in pixel between the centors of the detected circles
-                               100,                     // hight threshold(½çÏŞ) of canny(¾«È·µÄ) edeg  detector ,called by cvHoughCircles
+                               100,                     // hight threshold(ç•Œé™) of canny(ç²¾ç¡®çš„) edeg  detector ,called by cvHoughCircles
                                50,                      // lower threshold of canny edeg detector
                                10, //min redius of circle
                                400 // max redius of circle
                                );
-    for (i = 0; i < pSeqCircles->total; i++){ // ¶ÔÓÚÃ¿¸ö¼ì²âµ½µÄcircle
+    for (i = 0; i < pSeqCircles->total; i++){ // å¯¹äºæ¯ä¸ªæ£€æµ‹åˆ°çš„circle
       pXYRadius=(float*)cvGetSeqElem(pSeqCircles, i);
       printf ("x=%f,y=%f,r=%f\n",pXYRadius[0],pXYRadius[1],pXYRadius[2]); // x, y ,r
-      // draw a small green circle ÔÚ¼ì²âµÄµÄÔ² ÄÚ²¿»­Ò»¸öĞ¡Ô²
+      // draw a small green circle åœ¨æ£€æµ‹çš„çš„åœ† å†…éƒ¨ç”»ä¸€ä¸ªå°åœ†
       cvCircle(pImgOrig,
                cvPoint(pXYRadius[0],pXYRadius[1]), // x y  point
-               3, //3 pixel,  or   pXYRadius[2],                       // r °ë¾¶,
+               3, //3 pixel,  or   pXYRadius[2],                       // r åŠå¾„,
                CV_RGB(0,255,0),
-               CV_FILLED      // ÊµĞÄ
+               CV_FILLED      // å®å¿ƒ
                );
 
       cvCircle(pImgOrig,
                cvPoint(pXYRadius[0],pXYRadius[1]), // x y  point
-               3, //3 pixel,  or   pXYRadius[2],                       // r °ë¾¶,
+               3, //3 pixel,  or   pXYRadius[2],                       // r åŠå¾„,
                CV_RGB(0,255,0),
-               CV_FILLED      // ÊµĞÄ
+               CV_FILLED      // å®å¿ƒ
                );
     } // end for
     cvShowImage("Origin",pImgOrig);

@@ -14,7 +14,7 @@ int main( int argc, char** argv )
   // CV_LOAD_IMAGE_GRAYSCALE - If set, always convert image to the grayscale
 
   // 从文件读一个img ,
-  Mat originMat  = cv::imread("C:\\shots\\2013_07_17-172233845.png",CV_LOAD_IMAGE_COLOR);
+  Mat originMat  = cv::imread("/Users/jishuuhou/Pictures/m2w500hq85lt_original_XfKB_1b7d000041351191.jpg",CV_LOAD_IMAGE_COLOR);
   if(! originMat.data )                              // Check for invalid input
     {
       cout <<  "Could not open or find the image" << std::endl ;
