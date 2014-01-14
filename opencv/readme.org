@@ -1,4 +1,7 @@
 * hello opencv  Computer Visivion
 mklink /d    "d:\Documents\Visual Studio 2010\Projects\opencv_demo\opencv_demo" d:\hello_c\opencv
+
 编译命令
+维护好CMakeLists.txt 文件 ，
+然后用以下命令 生成可执行文件
 cmake . && make

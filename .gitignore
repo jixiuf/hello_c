@@ -35,3 +35,5 @@
 /opencv/opencv_demo
 /opencv/Demo01LoadImg
 /opencv/Demo02ImgRGBInRangeFilter
+/opencv/Demo03imwrite
+/opencv/WebCamCircleDetect
