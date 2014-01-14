@@ -39,7 +39,7 @@ int main( int argc, char** argv )
   // 在这个窗口中 显示上面加载的img
   cv::imshow("range2", D);
 
-  std::cout << D << std::endl;
+  // std::cout << D << std::endl;
   // Met 分为header和data 部分，
   // A(B) A=B , Mat B(originMat,Rect(10,10,400,400)), 等 只是header不同，  其data 指向同一个地方 ，通过引用计数来决定何时清空data内存
   // A=B.clone() ,or A=copeTo(B) ，则会 复制data部分
