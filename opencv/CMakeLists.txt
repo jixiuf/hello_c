@@ -8,6 +8,7 @@ add_executable( Demo03imwrite Demo03imwrite.cpp )
 add_executable( Demo04Mat Demo04Mat.cpp )
 add_executable( WebCamCircleDetectCpp WebCamCircleDetectCpp.cpp )
 add_executable( Demo05Time Demo05Time.cpp )
+add_executable( Demo06scanMat Demo06scanMat.cpp )
 
 target_link_libraries( Demo01LoadImg ${OpenCV_LIBS} )
 target_link_libraries( Demo02ImgRGBInRangeFilter ${OpenCV_LIBS} )
@@ -16,3 +17,5 @@ target_link_libraries( Demo03imwrite ${OpenCV_LIBS} )
 target_link_libraries( Demo04Mat ${OpenCV_LIBS} )
 target_link_libraries( WebCamCircleDetectCpp ${OpenCV_LIBS} )
 target_link_libraries( Demo05Time ${OpenCV_LIBS} )
+target_link_libraries( Demo06scanMat ${OpenCV_LIBS} )
+
