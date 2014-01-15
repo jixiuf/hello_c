@@ -21,6 +21,9 @@ int main( int argc, char** argv )
       return -1;
     }
 
+  //当以CV_LOAD_IMAGE_GRAYSCALE 读取时， channels()=1
+  std::cout << "channels=" <<originMat.channels()<< std::endl;
+
   // 启动一个窗口，窗口大小 自动调整
 
   // WINDOW_NORMAL If this is set, the user can resize the window (no constraint).
