@@ -9,7 +9,7 @@ using namespace std;
 int main( int argc, char** argv )
 {
   // 从文件读一个img ,
-  Mat originMat  = cv::imread("/Users/jishuuhou/Pictures/m2w500hq85lt_original_XfKB_1b7d000041351191.jpg",CV_LOAD_IMAGE_COLOR);
+  Mat originMat  = cv::imread("in_color.png",CV_LOAD_IMAGE_COLOR);
   if(! originMat.data )                              // Check for invalid input
     {
       cout <<  "Could not open or find the image" << std::endl ;

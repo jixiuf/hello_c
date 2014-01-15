@@ -9,7 +9,7 @@ using namespace std;
 int main( int argc, char** argv )
 {
   // 从文件读一个img ,
-  Mat originMat  = cv::imread("C:\\shots\\2013_07_17-172233845.png",CV_LOAD_IMAGE_COLOR);
+  Mat originMat  = cv::imread("in_color.png",CV_LOAD_IMAGE_COLOR);
   Mat modifiedMat  ;
   if(! originMat.data )                              // Check for invalid input
     {
