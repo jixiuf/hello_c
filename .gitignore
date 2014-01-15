@@ -39,3 +39,4 @@
 *.vcxproj
 *.vcxproj.filters
 *.sln
+/opencv/Demo01LoadImg.vcxproj.user

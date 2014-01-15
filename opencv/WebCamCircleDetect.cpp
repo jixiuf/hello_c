@@ -3,12 +3,10 @@
 #include <opencv/cxcore.h>
 #include <opencv/cvaux.h>
 #include <opencv/highgui.h>
-
 #include <stdio.h>
 #include <stdlib.h>
-// using namespace std;
+// c 版 opencv1.0 提供的接口
 // 主要实现 在摄像头前移动一个圆形物体，此程序 能够追踪此物体的轨迹
-// 这里 使用了opencv1 的函数，
 int main(int argc, char *argv[]){
   // 可能需要把摄像头的像素也调成这个大小
   CvSize size640x480=cvSize(640,480);
