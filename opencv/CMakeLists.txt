@@ -10,6 +10,7 @@ add_executable( WebCamCircleDetectCpp WebCamCircleDetectCpp.cpp )
 add_executable( Demo05Time Demo05Time.cpp )
 add_executable( Demo06scanMat Demo06scanMat.cpp )
 add_executable( Demo07Weight Demo07Weight.cpp )
+add_executable( Demo08CopyTo Demo08CopyTo.cpp )
 
 
 target_link_libraries( Demo01LoadImg ${OpenCV_LIBS} )
@@ -21,4 +22,6 @@ target_link_libraries( WebCamCircleDetectCpp ${OpenCV_LIBS} )
 target_link_libraries( Demo05Time ${OpenCV_LIBS} )
 target_link_libraries( Demo06scanMat ${OpenCV_LIBS} )
 target_link_libraries( Demo07Weight ${OpenCV_LIBS} )
+target_link_libraries( Demo08CopyTo ${OpenCV_LIBS} )
+
 
