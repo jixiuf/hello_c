@@ -17,8 +17,8 @@ int main( int argc, char** argv )
     }
 
   // 截取某一范围内的图片
-  Mat B(originMat,Rect(10,10,400,400));
-  cv::namedWindow("rect",WINDOW_AUTOSIZE);
+  Mat B(originMat,Rect(10,10,200,200));
+  cv::namedWindow("rect",WINDOW_NORMAL);
   // 在这个窗口中 显示上面加载的img
   cv::imshow("rect", B);
 
@@ -28,14 +28,14 @@ int main( int argc, char** argv )
   //  originMat(Range::all(),Range(1,30)); 取 originMat 的所有行，  [1-30) 列  包括1 不包括30
   // Range 应该是一个范围，  从一个点到另一个点 ， 两个这样的range就划定了一个矩形
   Mat C= originMat(Range::all(),Range(1,30));
-  cv::namedWindow("range",WINDOW_AUTOSIZE);
+  cv::namedWindow("range",WINDOW_NORMAL);
   // 在这个窗口中 显示上面加载的img
   cv::imshow("range", C);
 
 
   //  originMat(Range(1,3),Range::all()); 取 originMat  [1-3) 行 包括1 不包括3 ，Range::all()所有列
   Mat D= originMat(Range(1,100),Range::all());
-  cv::namedWindow("range2",WINDOW_AUTOSIZE);
+  cv::namedWindow("range2",WINDOW_NORMAL);
   // 在这个窗口中 显示上面加载的img
   cv::imshow("range2", D);
 
