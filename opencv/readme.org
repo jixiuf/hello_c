@@ -1,6 +1,10 @@
 * hello opencv  Computer Visivion
 mklink /d    "d:\Documents\Visual Studio 2010\Projects\opencv_demo\opencv_demo" d:\hello_c\opencv
 
+
+setx OpenCV_DIR=D:\usr\opencv\build\x86\vc10\lib\
+OpenCVConfig.cmake 文件在哪OpenCV_DIR就该指向哪 似乎
+
 编译命令
 维护好CMakeLists.txt 文件 ，
 然后用以下命令 生成可执行文件

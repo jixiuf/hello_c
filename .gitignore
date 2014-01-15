@@ -26,8 +26,6 @@
 /opencv/opencv_demo.vcxproj.user
 /opencv/ClassDiagram1.cd
 /opencv/ClassDiagram2.cd
-/opencv/opencv_demo.vcxproj
-/opencv/opencv_demo.vcxproj.filters
 /opencv/CMakeFiles/
 /opencv/cmake_install.cmake
 /opencv/Makefile
@@ -38,3 +36,6 @@
 /opencv/Demo03imwrite
 /opencv/WebCamCircleDetect
 /opencv/Demo04Mat
+*.vcxproj
+*.vcxproj.filters
+*.sln
