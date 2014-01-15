@@ -16,13 +16,18 @@ int main( int argc, char** argv )
       cout <<  "Could not open or find the image" << std::endl ;
       return -1;
     }
+
+  cv::namedWindow("origin",WINDOW_NORMAL);
+  // 在这个窗口中 显示上面加载的img
+  cv::imshow("origin", originMat);
+
   // 只显示 Scalar 两个参数 范围之间的 RGB,
   // 可以对比原图与经此处理后的图片进行对比
   // 此函数 可以实现 以原图为背景的模糊背景
-  cv::inRange(originMat, cv::Scalar(0,0,100),cv::Scalar(100,100,256), modifiedMat);
-  cv::namedWindow("winname",WINDOW_AUTOSIZE);
+  cv::inRange(originMat, cv::Scalar(00,0,10),cv::Scalar(100,100,256), modifiedMat);
+  cv::namedWindow("modified",WINDOW_NORMAL);
   // 在这个窗口中 显示上面加载的img
-  cv::imshow("winname", modifiedMat);
+  cv::imshow("modified", modifiedMat);
   // Wait for a keystroke in the window
   cv::waitKey(0);               // 无限等待，直到按下某key后才退出
   return 0;
