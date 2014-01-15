@@ -22,6 +22,7 @@ int main( int argc, char** argv )
   cv::imshow("winname", originMat);
 
   // write to file
-  cv::imwrite("/tmp/out.jpg", originMat);
+  cv::imwrite("out.png", originMat);
+  waitKey(0);
   return 0;
 }
