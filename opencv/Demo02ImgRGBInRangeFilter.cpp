@@ -5,7 +5,7 @@
 // cv::inRange对图片进行灰色过滤
 using namespace cv;
 using namespace std;
-// 加载一个img ,然后对其RGB 进行一定的过滤
+// 加载一个img ,然后对其RGB 进行一定的过滤, 只保留某一范围内的像素值
 int main( int argc, char** argv )
 {
   // 从文件读一个img ,
