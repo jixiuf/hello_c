@@ -36,7 +36,7 @@ int main( int argc, char** argv )
   // 从originMat里截取 大小与originMat2相同的区域
   Mat imageROI=originMat(cv::Rect(0,0,originMat2.cols,originMat2.rows));                 // region of interest
 
-  double alpha=0.3;
+  double alpha=0.4;
   double beta=1-alpha;
   double gama=0.0;
   // 最后一个参数 是输入对象 ，依然指定为imageROI ,则改变后的结果会存到imageROI
