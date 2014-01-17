@@ -13,7 +13,7 @@ add_executable( Demo07Weight Demo07Weight.cpp )
 add_executable( Demo08CopyTo Demo08CopyTo.cpp )
 add_executable( Demo09Brightness Demo09Brightness.cpp )
 add_executable( Demo10BasicDraw Demo10BasicDraw.cpp )
-
+add_executable( Deme11PutText Deme11PutText.cpp )
 
 target_link_libraries( Demo01LoadImg ${OpenCV_LIBS} )
 target_link_libraries( Demo02ImgRGBInRangeFilter ${OpenCV_LIBS} )
@@ -27,3 +27,4 @@ target_link_libraries( Demo07Weight ${OpenCV_LIBS} )
 target_link_libraries( Demo08CopyTo ${OpenCV_LIBS} )
 target_link_libraries( Demo09Brightness ${OpenCV_LIBS} )
 target_link_libraries( Demo10BasicDraw ${OpenCV_LIBS} )
+target_link_libraries( Deme11PutText ${OpenCV_LIBS} )
