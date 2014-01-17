@@ -9,6 +9,8 @@ using namespace std;
 // 比如 读 写 mat 对象 ， 序列 ， map  ，及自定义对象
 // http://docs.opencv.org/doc/tutorials/core/file_input_output_with_xml_yml/file_input_output_with_xml_yml.html#fileinputoutputxmlyaml
 // 自定义对象 本例未给出示例
+// 这里 读写的都是xml格式的
+//
 void write_mat_test(){
 
   // <?xml version="1.0"?>
