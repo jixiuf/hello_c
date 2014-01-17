@@ -41,3 +41,12 @@
 *.sln
 /opencv/Demo01LoadImg.vcxproj.user
 /opencv/out.png
+/opencv/Deme11PutText
+/opencv/Demo05Time
+/opencv/Demo06scanMat
+/opencv/Demo07Weight
+/opencv/Demo08CopyTo
+/opencv/Demo09Brightness
+/opencv/Demo10BasicDraw
+/opencv/WebCamCircleDetectCpp
+/opencv/discrete_fourier_transform
