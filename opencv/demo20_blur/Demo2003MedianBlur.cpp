@@ -21,6 +21,11 @@ using namespace std;
 using namespace cv;
 
 // 以下代码演示 中值模糊
+
+// The median filter run through each element of the signal
+// (in this case the image) and replace each pixel with the median of its
+// neighboring pixels (located in a square neighborhood around the evaluated
+// pixel).
 int main(int argc, char *argv[]){
   namedWindow("win",WINDOW_NORMAL);
 
@@ -30,7 +35,7 @@ int main(int argc, char *argv[]){
     std::cout << "image doesnot exists" << std::endl;
     exit(-1);
   }
-  for (int i = 1; i < 30; i=i+2){ // 似乎i 只能为奇数
+  for (int i = 1; i < 30; i=i+2){ //
     medianBlur(origin,boxblured[i],i);
     stringstream s;
     s<<"win"<<i;
