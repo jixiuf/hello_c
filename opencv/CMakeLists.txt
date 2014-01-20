@@ -19,6 +19,8 @@ add_executable( Demo12XmlYal Demo12XmlYal.cpp )
 
 add_executable( Demo21ErodingDilating Demo21ErodingDilating.cpp )
 
+add_executable( Demo22Morphological Demo22Morphological.cpp )
+
 target_link_libraries( Demo01LoadImg ${OpenCV_LIBS} )
 target_link_libraries( Demo02ImgRGBInRangeFilter ${OpenCV_LIBS} )
 target_link_libraries( WebCamCircleDetect ${OpenCV_LIBS} )
@@ -35,3 +37,4 @@ target_link_libraries( Deme11PutText ${OpenCV_LIBS} )
 target_link_libraries( discrete_fourier_transform ${OpenCV_LIBS} )
 target_link_libraries( Demo12XmlYal ${OpenCV_LIBS} )
 target_link_libraries( Demo21ErodingDilating ${OpenCV_LIBS} )
+target_link_libraries( Demo22Morphological ${OpenCV_LIBS} )
