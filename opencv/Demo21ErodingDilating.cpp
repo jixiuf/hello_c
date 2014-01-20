@@ -6,6 +6,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
 // Eroding 侵蚀  and Dilating膨胀
+// dilating ,白纸上一个小黑点 ，经膨胀后的效果是 小黑点的例会变大
+// Eroding 应该是与膨胀的效果相反的
 
 using namespace std;
 using namespace cv;
@@ -13,8 +15,8 @@ Mat src, target;
 int erosion_ele=0;
 int erosion_size=0;
 
-int max_eles=3;
-int max_kernel_size=21;
+int max_eles=2;
+int max_kernel_size=15;
 
 int dilation_ele=0;
 int dilation_size=0;
@@ -22,6 +24,8 @@ int dilation_size=0;
 void erosion(int ,void*);
 void dilation(int,void*);
 
+const char* dilation_winname="win_dilate";
+const char* erosion_winname="win_erosion";
 int main(int argc, char *argv[])
 {
 
@@ -29,25 +33,25 @@ int main(int argc, char *argv[])
   if(src.empty()){
     exit(-1);
   }
-  namedWindow("win_erosion",WINDOW_NORMAL);
-  namedWindow("win_dilate",WINDOW_NORMAL);
-  cvMoveWindow( "win_dilate", src.cols, 0 );
+  namedWindow(dilation_winname,WINDOW_NORMAL);
+  namedWindow(erosion_winname,WINDOW_NORMAL);
+  // cvMoveWindow(erosion_winname, src.cols, 0 );
 
   /// Create Erosion Trackbar
-  createTrackbar( "Element:\n 0: Rect \n 1: Cross \n 2: Ellipse", "win_erosion",
+  createTrackbar( "rect_cross_ellipse", erosion_winname,
                   &erosion_ele, max_eles,
                   erosion );
 
-  createTrackbar( "Kernel size:\n 2n +1", "win_erosion",
+  createTrackbar( "Kernel size:\n 2n +1", erosion_winname,
                   &erosion_size, max_kernel_size,
                   erosion );
 
   /// Create Dilation Trackbar
-  createTrackbar( "Element:\n 0: Rect \n 1: Cross \n 2: Ellipse", "win_dilation",
+  createTrackbar("rect_cross_ellipse", dilation_winname,
                   &dilation_ele, max_eles,
                   dilation );
 
-  createTrackbar( "Kernel size:\n 2n +1", "win_dilation",
+  createTrackbar( "Kernel size:\n 2n +1", dilation_winname,
                   &dilation_size, max_kernel_size,
                   dilation );
 
@@ -70,8 +74,9 @@ void erosion(int ,void*){
   Mat ele =getStructuringElement(erosion_type,
                                  Size(2*erosion_size+1,2*erosion_size+1),
                                  Point(erosion_size,erosion_size));
+  // 应该是用ele 所表示这段区域的像素值来计算出一个值
   erode(src,target,ele);
-  imshow("win_erosion",target);
+  imshow(erosion_winname,target);
 }
 
 // 两个未有到的参数是因为createTrackbar 接口要求
@@ -88,5 +93,5 @@ void dilation(int ,void*){
                                  Size(2*dilation_size+1,2*dilation_size+1),
                                  Point(dilation_size,dilation_size));
   dilate(src,target,ele);
-  imshow("win_dilate",target);
+  imshow(dilation_winname,target);
 }
