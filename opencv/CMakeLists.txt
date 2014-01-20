@@ -17,6 +17,8 @@ add_executable( Deme11PutText Deme11PutText.cpp )
 add_executable( discrete_fourier_transform discrete_fourier_transform.cpp )
 add_executable( Demo12XmlYal Demo12XmlYal.cpp )
 
+add_executable( Demo21ErodingDilating Demo21ErodingDilating.cpp )
+
 target_link_libraries( Demo01LoadImg ${OpenCV_LIBS} )
 target_link_libraries( Demo02ImgRGBInRangeFilter ${OpenCV_LIBS} )
 target_link_libraries( WebCamCircleDetect ${OpenCV_LIBS} )
@@ -32,3 +34,4 @@ target_link_libraries( Demo10BasicDraw ${OpenCV_LIBS} )
 target_link_libraries( Deme11PutText ${OpenCV_LIBS} )
 target_link_libraries( discrete_fourier_transform ${OpenCV_LIBS} )
 target_link_libraries( Demo12XmlYal ${OpenCV_LIBS} )
+target_link_libraries( Demo21ErodingDilating ${OpenCV_LIBS} )
