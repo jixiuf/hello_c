@@ -5,9 +5,30 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
+// 两种典型的 Morphological Transformation 形态的, 形态学的
 // Eroding 侵蚀  and Dilating膨胀
 // dilating ,白纸上一个小黑点 ，经膨胀后的效果是 小黑点的例会变大
 // Eroding 应该是与膨胀的效果相反的
+
+//
+//1. erode
+//2. dilate
+// 其它的几种变换
+//3.  open
+//     open( src, element) = dilate( erode( src, element ) )
+//     Useful for removing small objects (it is assumed that the objects are bright on a dark foreground)
+//     原理就是 先缩小 后放大， 如果是小东西，缩小后更小， 更放大也不会有原来那么大
+//4. close
+//    close( src, element ) = erode( dilate( src, element ) )
+//    Useful to remove small holes (dark regions).
+//5. morph_{grad}( src, element ) = dilate( src, element ) - erode( src, element )
+//   finding the outline of an object
+// 6. tophat( src, element ) = src - open( src, element )
+
+// 7. blackhat( src, element ) = close( src, element ) - src
+// It is the difference between the closing and its input image
+
+
 
 using namespace std;
 using namespace cv;
