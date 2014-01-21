@@ -6,6 +6,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
 // 放大缩小图片的像素值，
+// (zoom out). zoom in
 
 using namespace std;
 using namespace cv;
