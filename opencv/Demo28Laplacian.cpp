@@ -12,12 +12,9 @@
 // 可以通过二次求导后 的0点 寻找边界
 // 但是 二次求导后是0 的点 并不一定是斜率变化最大的点， 还有其他一些干扰点
 // 但是经 拉普拉斯算子处理之后 ，则可以
+// 感觉 处理后的图片 效果很暗，
 using namespace std;
 using namespace cv;
-// 求导 操作， 主要用途 是找出某个物体的边界
-// 通过求导 可以使渐变的过程 变得明显
-// 通过计算两个像素之间的差别
-// Sobel
 int main(int argc, char *argv[]){
 
   Mat gray = imread("in_color.png",CV_LOAD_IMAGE_GRAYSCALE);
