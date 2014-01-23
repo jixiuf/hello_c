@@ -7,6 +7,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 using namespace std;
 using namespace cv;
+// remap 主要实现， 用图片中的某个位置的点来代替当前点， 达到图像反转，缩小等目的
 int main(int argc, char *argv[]){
 
   Mat src = imread("in_color.png");
