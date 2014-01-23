@@ -20,17 +20,17 @@ int main(int argc, char *argv[]){
   RNG rng;
 
   // the size of border
-  int top=(int)0.09*src.rows;
-  int bottom= (int)0.09*src.rows;
-  int left=(int)0.09*src.cols;
-  int right=(int)0.09*src.cols;
+  int top=(int)(0.09*src.rows);
+  int bottom= (int)(0.09*src.rows);
+  int left=(int)(0.09*src.cols);
+  int right=(int)(0.09*src.cols);
 
   // BORDER_CONSTANT 使用常量
   // BORDER_REFLECT 用某个区域替换
+  int borderType=BORDER_CONSTANT;
 
   // value: If borderType is BORDER_CONSTANT, this is the value used to fill the border pixels.
   Scalar value =Scalar(rng.uniform(0, 255),rng.uniform(0, 255),rng.uniform(0, 255));
-  int borderType=BORDER_REFLECT;
   copyMakeBorder(src, dst, top, bottom, left, right, borderType,value);
 
   namedWindow("src",WINDOW_NORMAL);
