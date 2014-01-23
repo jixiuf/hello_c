@@ -14,6 +14,9 @@ int main(int argc, char *argv[]){
   imshow("src",src);
 
   Mat dst(src.size(),src.type());
+  // 我把这里改成src.type() 下面的mapx.at<float>改成mapx.at<int> 报错。
+  // 这里用CV_32FC1  channel 为1 ， 普通rgb 是3，这里的mapx mapy 里面存的并不是像素值
+  // 而是一个一维的坐标
   Mat mapx(src.size(),CV_32FC1 );
   Mat mapy(src.size(),CV_32FC1);
 
