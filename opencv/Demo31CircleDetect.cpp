@@ -7,7 +7,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 using namespace std;
 using namespace cv;
-// 检测一副图中的直线
+// 检测一副图中的圆
 int main(int argc, char *argv[]){
 
   Mat src = imread("in_circle.jpg");
