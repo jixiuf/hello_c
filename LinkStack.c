@@ -1,13 +1,14 @@
+/*  -*- coding:utf-8 -*-  */
 #include<stdio.h>
 #include<stdlib.h>
 #include<stack.h>
 /*
-   ÕâÒ»´ÎµÄÐÞ¸Ä¸ü¾ßÓÃÍ¨¹ýÐÔ£¬
-   ÒòÎªÕâÀï¶¨ÒåÁËÒ»¸ö
+   è¿™ä¸€æ¬¡çš„ä¿®æ”¹æ›´å…·ç”¨é€šè¿‡æ€§ï¼Œ
+   å› ä¸ºè¿™é‡Œå®šä¹‰äº†ä¸€ä¸ª
    typedef void *Void 
-   ËùÒÔÏÂÃæ³öÏÖVoid µÄÊ±¸öÏàµ±ÓÚvoid* ÀàÐÍµÄ£¬
-   ¶øvoid* ÀàÐÍµÄÖ¸Õë¿ÉÒÔ×ª»»ÎªÈÎÒâÀàÐÍ£¬
-   ËùÒÔ ÎÞÂÛÊÇ½á¹¹Ìå£¬»¹ÊÇÆÕÍ¨µÄint float ÀàÐÍµÄÖ¸Õë£¬¶¼¿ÉÒÔÍùÀï·Å
+   æ‰€ä»¥ä¸‹é¢å‡ºçŽ°Void çš„æ—¶ä¸ªç›¸å½“äºŽvoid* ç±»åž‹çš„ï¼Œ
+   è€Œvoid* ç±»åž‹çš„æŒ‡é’ˆå¯ä»¥è½¬æ¢ä¸ºä»»æ„ç±»åž‹ï¼Œ
+   æ‰€ä»¥ æ— è®ºæ˜¯ç»“æž„ä½“ï¼Œè¿˜æ˜¯æ™®é€šçš„int float ç±»åž‹çš„æŒ‡é’ˆï¼Œéƒ½å¯ä»¥å¾€é‡Œæ”¾
    */
 Stack createStack(){
 	Stack s ;
@@ -35,7 +36,7 @@ Node getNode(Node n,int index ){
 }
 Node getLastNodeButOne(Stack s ){
 	int top=s->top;
-	if (top<1){//±£Ö¤s  ÖÁÉÙÓÐÁ½¸ö½Úµã,lastButOne ²Å»áÓÐÖµ
+	if (top<1){//ä¿è¯s  è‡³å°‘æœ‰ä¸¤ä¸ªèŠ‚ç‚¹,lastButOne æ‰ä¼šæœ‰å€¼
 		return NULL;
 	}
 	return getNode(s->n,top-1);
