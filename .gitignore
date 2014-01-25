@@ -62,3 +62,13 @@
 /opencv/Demo22Morphological
 /opencv/Demo23pyrUpDown
 /opencv/Demo24ThresholdingOperator
+/opencv/Demo25Filter2d
+/opencv/Demo26Border
+/opencv/Demo27Derivatives
+/opencv/Demo28Laplacian
+/opencv/Demo29Canny
+/opencv/Demo30LineDetect
+/opencv/Demo31CircleDetect
+/opencv/Demo32Remap
+/opencv/Demo33Affine
+/opencv/Demo34AffineRotate
