@@ -8,6 +8,7 @@
 using namespace std;
 using namespace cv;
 // 似乎  是跟对比度相关，  ,计算出 跟对比度相关的东西， 然后以直方图的方式显示出来，
+// 似乎使关键物体的对比度相应增强，不重要物体的对比度减小
 // 但是我下面的代码跟 教程上的显示效果完全不一致
 // http://docs.opencv.org/doc/tutorials/imgproc/histograms/histogram_equalization/histogram_equalization.html#histogram-equalization
 int main(int argc, char *argv[]){
