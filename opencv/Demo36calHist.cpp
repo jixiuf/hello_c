@@ -21,8 +21,6 @@ int main(int argc, char *argv[]){
   int nimages=1;
   // int channels=0;
 
-
-
   int dims=1;
   int histSize=256;
   float range[]={0,256};
@@ -39,18 +37,20 @@ int main(int argc, char *argv[]){
 
   // draw the histograms for b g r
 
-  int bin_w=cvRound((double)(512/400));
-  Mat histImage(512,400,CV_8UC3,Scalar(0,0,0));
+  int hist_w=512;
+  int hist_h=400;
+  int bin_w=cvRound((double)(hist_w/histSize));
+  Mat histImage(hist_h,hist_w,CV_8UC3,Scalar(0,0,0));
   // normalize the result to [0,histImage.rows]
   normalize(b, b, 0, histImage.rows, NORM_MINMAX, -1,Mat());
   normalize(g, g, 0, histImage.rows, NORM_MINMAX, -1,Mat());
   normalize(r, r, 0, histImage.rows, NORM_MINMAX, -1,Mat());
 
-  // draw for each channels
+  // // draw for each channels
   for (int i = 0; i < histSize; ++i){
-    line(b, Point(bin_w*(i-1),400-cvRound(b.at<float>(i-1))), Point(bin_w*(i),400-cvRound(b.at<float>(i))), Scalar(255,0,0));
-    line(g, Point(bin_w*(i-1),400-cvRound(b.at<float>(i-1))), Point(bin_w*(i),400-cvRound(g.at<float>(i))), Scalar(0,255,0));
-    line(r, Point(bin_w*(i-1),400-cvRound(b.at<float>(i-1))), Point(bin_w*(i),400-cvRound(r.at<float>(i))), Scalar(0,0,255));
+    line(b, Point(bin_w*(i-1),hist_h-cvRound(b.at<float>(i-1))), Point(bin_w*(i),hist_h-cvRound(b.at<float>(i))), Scalar(255,0,0));
+    line(g, Point(bin_w*(i-1),hist_h-cvRound(b.at<float>(i-1))), Point(bin_w*(i),hist_h-cvRound(g.at<float>(i))), Scalar(0,255,0));
+    line(r, Point(bin_w*(i-1),hist_h-cvRound(b.at<float>(i-1))), Point(bin_w*(i),hist_h-cvRound(r.at<float>(i))), Scalar(0,0,255));
   }
 
   namedWindow("histImage",WINDOW_NORMAL);
