@@ -48,9 +48,9 @@ int main(int argc, char *argv[]){
 
   // // draw for each channels
   for (int i = 0; i < histSize; ++i){
-    line(b, Point(bin_w*(i-1),hist_h-cvRound(b.at<float>(i-1))), Point(bin_w*(i),hist_h-cvRound(b.at<float>(i))), Scalar(255,0,0));
-    line(g, Point(bin_w*(i-1),hist_h-cvRound(b.at<float>(i-1))), Point(bin_w*(i),hist_h-cvRound(g.at<float>(i))), Scalar(0,255,0));
-    line(r, Point(bin_w*(i-1),hist_h-cvRound(b.at<float>(i-1))), Point(bin_w*(i),hist_h-cvRound(r.at<float>(i))), Scalar(0,0,255));
+    line(histImage, Point(bin_w*(i-1),hist_h-cvRound(b.at<float>(i-1))), Point(bin_w*(i),hist_h-cvRound(b.at<float>(i))), Scalar(255,0,0));
+    line(histImage, Point(bin_w*(i-1),hist_h-cvRound(b.at<float>(i-1))), Point(bin_w*(i),hist_h-cvRound(g.at<float>(i))), Scalar(0,255,0));
+    line(histImage, Point(bin_w*(i-1),hist_h-cvRound(b.at<float>(i-1))), Point(bin_w*(i),hist_h-cvRound(r.at<float>(i))), Scalar(0,0,255));
   }
 
   namedWindow("histImage",WINDOW_NORMAL);
