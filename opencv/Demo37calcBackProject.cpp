@@ -21,7 +21,7 @@ using namespace cv;
 // in an image:
 
 // 比如 检测某张图片上  是否 有人皮肤的颜色
-
+// Where we learn how to use histograms to find similar objects in images
 
 Mat src ,hsv,hue;
 int bins=12;
