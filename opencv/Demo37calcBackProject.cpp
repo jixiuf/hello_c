@@ -24,7 +24,7 @@ using namespace cv;
 
 
 Mat src ,hsv,hue;
-int bins=25;
+int bins=12;
 
 void fun(int ,void*);
 
@@ -32,8 +32,27 @@ int main(int argc, char *argv[]){
 
   src = imread("in_hand_1.jpg");
   cvtColor(src, hsv, CV_BGR2HSV);
+
+
+ // we will use only the Hue value for our 1-D histogram (check out the fancier
+ // code in the links above if you want to use the more standard H-S histogram,
+ // which yields better results):
   hue.create(hsv.size(), hsv.depth());
   int ch[]={0,0};
+  // as you see, we use the function
+  // http://docs.opencv.org/modules/core/doc/operations_on_arrays.html?highlight=mixchannels#mixchannelsmixChannels
+  // to get only the channel 0 (Hue) from the hsv image. It gets the following
+  // parameters:
+
+  // &hsv: The source array from which the channels will be copied
+  // 1: The number of source arrays
+  // &hue: The destination array of the copied channels
+  // 1: The number of destination arrays
+  // ch[] = {0,0}: The array of index pairs indicating how the channels are
+  // copied. In this case, the Hue(0) channel of &hsv is being copied to the 0
+  // channel of &hue (1-channel)
+
+  // 1: Number of index pairs
   mixChannels(&hsv, 1, &hue, 1, ch, 1);
 
   char* win_image="src";
