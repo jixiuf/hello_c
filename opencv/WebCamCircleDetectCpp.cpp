@@ -1,4 +1,4 @@
-//  -*- coding:utf-8-dos -*-
+//  -*- coding:utf-8-unix -*-
 // Tracker10.cpp
 
 #include<opencv2/core/core.hpp>

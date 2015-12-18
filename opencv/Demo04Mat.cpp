@@ -1,4 +1,4 @@
-//  -*- coding:utf-8-dos -*-
+//  -*- coding:utf-8-unix -*-
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>

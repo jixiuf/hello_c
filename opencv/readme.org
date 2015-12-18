@@ -9,3 +9,34 @@ OpenCVConfig.cmake 文件在哪OpenCV_DIR就该指向哪 似乎
 维护好CMakeLists.txt 文件 ，
 然后用以下命令 生成可执行文件
 cmake . && make
+
+
+
+if [ -d /usr/local/opt/opencv3 ]; then
+    export OpenCV_DIR=/usr/local/opt/opencv3
+    export C_INCLUDE_PATH=$C_INCLUDE_PATH:$OpenCV_DIR/include
+    export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:$OpenCV_DIR/include
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OpenCV_DIR/lib
+fi
+
+(setq helm-gtags-GTAGSLIBPATH-alist
+      '(
+        ("~/repos/hello_c/opencv" "/usr/local/opt/opencv3/include" "usr/include/c++/4.2.1/")
+        ))
+(setq-default ac-clang-flags
+              (mapcar (lambda (item)(concat "-I" item))
+                      (split-string
+                       "
+/usr/local/opt/opencv3/include
+./
+../
+../include/
+./include/
+usr/include/c++/4.2.1/
+usr/include/
+usr/include/c++/4.2.1/backward
+usr/include/c++/4.2.1/bits
+usr/include/c++/4.2.1/debug
+usr/include/c++/4.2.1/ext
+usr/include/c++/4.2.1/tr1")))
+

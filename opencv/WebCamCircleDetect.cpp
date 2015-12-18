@@ -1,4 +1,4 @@
-//  -*- coding:utf-8-dos -*-
+//  -*- coding:utf-8-unix -*-
 // #include <iostream>
 #include <opencv/cxcore.h>
 #include <opencv/cvaux.h>

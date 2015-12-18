@@ -1,4 +1,4 @@
-//  -*- coding:utf-8-dos -*-
+//  -*- coding:utf-8-unix -*-
 // http://docs.opencv.org/doc/tutorials/core/how_to_scan_images/how_to_scan_images.html#howtoscanimagesopencv
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>

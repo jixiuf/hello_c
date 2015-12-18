@@ -1,4 +1,4 @@
-//  -*- coding:utf-8-dos -*-
+//  -*- coding:utf-8-unix -*-
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
@@ -14,7 +14,7 @@ int main( int argc, char** argv )
   // CV_LOAD_IMAGE_GRAYSCALE - If set, always convert image to the grayscale
 
   // 从文件读一个img ,
-  Mat originMat  = cv::imread("in_color.jpg",CV_LOAD_IMAGE_COLOR);
+  Mat originMat  = cv::imread("in_color.png",CV_LOAD_IMAGE_COLOR);
   if(! originMat.data )                              // Check for invalid input
     {
       cout <<  "Could not open or find the image" << std::endl ;
