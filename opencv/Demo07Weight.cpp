@@ -4,6 +4,7 @@
 #include <iostream>
 
 // 两张图片进行叠加
+// 指定权重
 //   cv::addWeighted(imageROI, alpha, originMat2, beta, gama, output);
 using namespace cv;
 using namespace std;
@@ -39,7 +40,7 @@ int main( int argc, char** argv )
   double alpha=0.4;
   double beta=1-alpha;
   double gama=0.0;
-  // 最后一个参数 是输入对象 ，依然指定为imageROI ,则改变后的结果会存到imageROI
+  // 最后一个参数 是输出对象 ，依然指定为imageROI ,则改变后的结果会存到imageROI
   // 而imageROI 是originMat的一个局部， 所以originMat也会跟着改变
   // 再次展现一下originMat,就可以看到叠加后的效果
   cv::addWeighted(imageROI, alpha, originMat2, beta, gama, imageROI);

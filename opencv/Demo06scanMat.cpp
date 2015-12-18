@@ -8,13 +8,14 @@ using namespace cv;
 using namespace std;
 // 图片的色值替换， 遍历 Mat 的几种方法
 
+// Mat 在内存中的存储可以想像成cols*rows 的点，每个点因为channel 的不同可能是
 Mat& scanMagAndReduce(Mat& input,const uchar* table){
   //  // accept only char type matrices
   // 保接触uchar 来表示的颜色值， 即<256
   // rgb颜色用3个数来表示 ，每个数可以选择uchar ushort ,或float等 ，这里
   // 只处理uchar类型的
-  std::cout << "input.depth()=" <<input.depth()<< std::endl;
-  CV_Assert(input.depth()!=sizeof(uchar));
+  std::cout << "input.depth()=" <<input.depth()<<" sizeof(uchar)="<<sizeof(uchar)<< std::endl;
+  // CV_Assert(input.depth()!=sizeof(uchar));
   int channels=input.channels(); // 返回 channels, rgb是3,即用3个数表示一种颜色  ，灰色的则为1
   int rows=input.rows;           // Mat有多少行
   int cols=input.cols*channels;  // Mat列数*channels ,
@@ -23,6 +24,9 @@ Mat& scanMagAndReduce(Mat& input,const uchar* table){
   // 而这些 可以理解成 都存在一个一维数组里，
   // 所以 数组元素的个数是 rolws*cols*channels
   if(input.isContinuous()){     // 是否是连续的 ，行与行之前是否有gap
+    // 连续的意思是，所有数据在内存中是连续的，像数组一相，不连续的则像链表
+    // 新创建的Mat 基本都是连续的
+    // 对于连续的Mat ,遍历每个element ,就像访问长为row*cols 的数组一样
     // http://docs.opencv.org/modules/core/doc/basic_structures.html#mat-iscontinuous
     // 似乎 如果连续 ，只用一行就可以表示
     cols=rows*cols;
@@ -30,6 +34,7 @@ Mat& scanMagAndReduce(Mat& input,const uchar* table){
   }
   uchar* p;
   for (int i = 0; i < rows; ++i) {
+    // 得到指定row 的指针
     p=input.ptr(i);
     for (int j = 0; j < cols; ++j){
       p[j]= table[p[j]];        // 用divide后的值取代原值
@@ -109,7 +114,7 @@ int main( int argc, char** argv )
   // 都用0来表示 ，11~20 都用10来表示， 对人眼来说 区别并不大
   uchar table[256];
   for (int i = 0; i < 256; ++i){
-    table[i]=(uchar)  (divideWith* i/divideWith);
+    table[i]=(uchar)  (divideWith* (i/divideWith));
   }
   //效果都一样， 只是速度可能不同
   method1(originMat,table);

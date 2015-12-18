@@ -40,3 +40,55 @@ usr/include/c++/4.2.1/debug
 usr/include/c++/4.2.1/ext
 usr/include/c++/4.2.1/tr1")))
 
+* 一些基本概念
+** depth 深度
+   Mat.depth()
+   用哪种数值类型来表示像素值
+   depth
+   The method returns the identifier of the matrix element depth (the type of each individual channel).
+   For example, for a 16-bit signed element array, the method returns CV_16S . A complete list of
+   matrix types contains the following values:
+   -   CV_8U=0 - 8-bit unsigned integers ( 0..255 )
+   -   CV_8S=1 - 8-bit signed integers ( -128..127 )
+   -   CV_16U=2 - 16-bit unsigned integers ( 0..65535 )
+   -   CV_16S=3 - 16-bit signed integers ( -32768..32767 )
+   -   CV_32S=4 - 32-bit signed integers ( -2147483648..2147483647 )
+   -   CV_32F=5 - 32-bit floating-point numbers ( -FLT_MAX..FLT_MAX, INF, NAN )
+   -   CV_64F=6 - 64-bit floating-point numbers ( -DBL_MAX..DBL_MAX, INF, NAN )
+** 通道 channel
+   Mat.channels()
+   普通灰色图 channel=1  cv::imread("in_color.png",CV_LOAD_IMAGE_GRAYSCALE);
+   有颜色的图 channel=3  cv::imread("in_color.png",CV_LOAD_IMAGE_COLOR);
+
+   that the order of the channels is inverse: BGR instead of RGB ，即channel0=B,channel1=G,channel2=R
+** Mat.type() 类型
+   通常在构建Mat中 会有一个type 作参数，
+   此type 包含channel 与depth信息
+   CV_[The number of bits per item][Signed or Unsigned][Type Prefix]C[The channel number]
+
+   比如CV_8UC3  最后的3 表示 这是个三维的点(channel=3), 决定了 取用Scalar所表示的4个元素中的几个
+   Mat.depth()==CV_8U
+   Mat.channels()==3
+   还有一些宏，如CV_8UC(1)==CV_8UC1，CV_8UC(2)==CV_8UC2，CV_8UC(3)=CV_8UC3
+   # #define CV_8UC1 CV_MAKETYPE(CV_8U,1)
+   # #define CV_8UC2 CV_MAKETYPE(CV_8U,2)
+   # #define CV_8UC3 CV_MAKETYPE(CV_8U,3)
+   # #define CV_8UC4 CV_MAKETYPE(CV_8U,4)
+   # #define CV_8UC(n) CV_MAKETYPE(CV_8U,(n))
+
+
+** Scalar 是一个元素数量为4个double的vector
+   typedef Scalar_<double> Scalar;
+   Scalar(0,0,255,1)
+   Scalar(0,0,255)  只指定前3个值
+   通常用Scalar 来表示Mat矩阵中的一个点
+   当channel =3时，Scalar 的前3个值有效，
+   channel=1 只第一个值有效
+   Scalar 只是用来构建Mat,Mat中并不存在Scalar
+   意思是说 灰色图 实际占用的内存是rgb 的1/3
+
+** Mat 的内存表示
+   实际数据占多少内存
+   elements=cols*rows*channels()
+   每个element 占多少字节内depth 决定， 如depth()==CV_8U,则占8字节
+   Demo06scanMat.cpp中有 遍历所有element的例子.scanMagAndReduce
