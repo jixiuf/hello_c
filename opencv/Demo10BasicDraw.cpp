@@ -1,5 +1,7 @@
+
 //  -*- coding:utf-8-unix -*-
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
 
@@ -11,15 +13,15 @@ void drawLine(Mat &m, Point start,Point end){
   int thickness = 2;            // 此参数可省略 ，默认是2
   int lineType=8;               // 此参数可省略 ，默认是8
   // cv::line(m, start, end, Scalar(100,100,0));
-  cv::line(m, start, end, Scalar(100,100,0),thickness,lineType);
+  line(m, start, end, Scalar(100,100,0),thickness,lineType);
 
 }
 void drawEllipse(Mat &m,Point center,double angle){
   // 椭圆,angle ,是角度 ，0~360
-  cv::ellipse(m, center, Size(100,50), angle, 0, 360, Scalar(255,0,0));
+  ellipse(m, center, Size(100,50), angle, 0, 360, Scalar(255,0,0));
 }
 void fillCircle(Mat &m ,Point center ,int radius){
-  cv::circle(m, center, radius, Scalar(0,0,255)); // red
+  circle(m, center, radius, Scalar(0,0,255)); // red
 }
 void drawPolygon(Mat &m ){
   Point ps[1][4];

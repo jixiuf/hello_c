@@ -78,3 +78,6 @@
 /opencv/GRTAGS
 /opencv/GTAGS
 /opencv/TAGS
+/opencv/Demo11PutText
+/opencv/Demo36compareHist
+/opencv/Demo37calcBackProject
