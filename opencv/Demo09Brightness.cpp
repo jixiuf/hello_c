@@ -12,6 +12,11 @@
 // opencv 提供Mat:convertTo,来实现下面复杂的过程
 // image.convertTo(new_image, -1, alpha, beta);
 
+// 图像亮度本质上图像中每个像素的亮度，每个像素的亮度本质上RGB值的大小，RGB值为0
+// 是像素点为黑色，RGB都为255时像素点最亮，为白色。对比度则是不同像素点之间的差值，
+// 差值越大，对比度越明显。从直方图分析的观点来看，对比度越好的图片，直方图曲线会越
+// 明显，分布也越显得均匀。
+
 using namespace cv;
 using namespace std;
 
@@ -35,8 +40,8 @@ int main( int argc, char** argv )
   cv::imshow("origin1", originMat);
 
   Mat newMat=Mat::zeros(originMat.size(), originMat.type());
-  double alpha=1.5 ;                // 1.0~3.0
-  int beta=50;                     // 0~100
+  double alpha=1 ;                // 1.0~3.0
+  int beta=100;                     // 0~100
   std::cout << originMat.channels() << std::endl;
   for (int i = 0; i < originMat.rows; ++i){
     for (int j = 0; j < originMat.cols; ++j){
